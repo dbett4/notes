@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>d + bet App Preview</title>
+  <style>
+    :root {
+      --ink: #171717;
+      --paper: #f7f3ea;
+      --surface: #fffaf0;
+      --surface-2: #fffdf7;
+      --line: #d8d0c3;
+      --muted: #79736a;
+      --signal: #3f3a34;
+      --slate: #4e5a61;
+      --olive: #5e6048;
+      --success: #1f7a4d;
+      --warning: #6f5b3e;
+      --error: #b23a33;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(rgba(216, 208, 195, 0.42) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(216, 208, 195, 0.42) 1px, transparent 1px),
+        var(--paper);
+      background-size: 32px 32px;
+      color: var(--ink);
+      font-family: Geist, "Geist Sans", Satoshi, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-feature-settings: "liga", "ss05", "tnum";
+    }
+
+    button, input { font: inherit; }
+
+    .app {
+      width: min(1440px, calc(100vw - 28px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 20px 0 36px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 20px;
+      align-items: center;
+      padding: 0 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 760;
+      letter-spacing: -0.015em;
+      white-space: nowrap;
+    }
+
+    .brand span:nth-child(2) { color: var(--signal); font-weight: 620; }
+
+    .status-rail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .pill {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 250, 240, 0.76);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .pill.ready,
+    .pill.degraded,
+    .pill.blocked {
+      color: var(--muted);
+    }
+
+    .ready .dot { background: var(--success); }
+    .degraded .dot { background: var(--warning); }
+    .blocked .dot { background: var(--error); }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: end;
+    }
+
+    .button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 14px;
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 18px;
+      font-weight: 520;
+      transition: transform 120ms var(--ease-out), background 160ms ease, border-color 160ms ease;
+    }
+
+    .button:hover { background: var(--surface-2); }
+    .button:active { transform: scale(0.985); }
+    .button:focus-visible { outline: 2px solid var(--slate); outline-offset: 2px; }
+    .button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .toolbar .button:active,
+    .drawer .actions .button:active { transform: scale(0.97); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      padding-top: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 250, 240, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: rgba(23, 23, 23, 0.04) 0 2px 2px 0;
+      animation: panel-enter 320ms var(--ease-out) both;
+    }
+
+    .main .panel { animation-delay: 40ms; }
+    .drawer { animation-delay: 120ms; }
+    .supporting { animation-delay: 160ms; }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: 28px;
+      line-height: 34px;
+      letter-spacing: -0.015em;
+    }
+
+    h2 {
+      font-size: 20px;
+      line-height: 28px;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 650;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 650;
+    }
+
+    .metric-stack {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .metric {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .metric-value {
+      margin-top: 6px;
+      font-size: 28px;
+      line-height: 34px;
+      letter-spacing: -0.015em;
+      font-weight: 740;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .small-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .main {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: end;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-title {
+      display: grid;
+      gap: 4px;
+    }
+
+    .queue-panel .queue {
+      padding: 12px;
+    }
+
+    .queue-controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 247, 0.44);
+    }
+
+    .segmented {
+      display: inline-flex;
+      width: fit-content;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.36);
+    }
+
+    .segment {
+      min-height: 30px;
+      border: 0;
+      border-radius: 4px;
+      padding: 0 10px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 18px;
+      font-weight: 520;
+      transition: transform 120ms var(--ease-out), background 160ms ease, color 160ms ease;
+    }
+
+    .segment:active { transform: scale(0.985); }
+    .segment[aria-pressed="true"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .queue-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: end;
+      gap: 8px;
+    }
+
+    .meta-chip {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.34);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+
+    .meta-chip strong {
+      color: var(--ink);
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .queue {
+      display: grid;
+      gap: 10px;
+    }
+
+    .ticket {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+      animation: panel-enter 320ms var(--ease-out) both;
+      transition: transform 160ms var(--ease-out), border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .ticket:nth-child(1) { animation-delay: 120ms; }
+    .ticket:nth-child(2) { animation-delay: 160ms; }
+    .ticket:nth-child(3) { animation-delay: 200ms; }
+
+    .ticket:active { transform: scale(0.995); }
+
+    .ticket::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      background: var(--signal);
+      opacity: 0.56;
+      transition: opacity 160ms ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .ticket:hover {
+        border-color: rgba(63, 58, 52, 0.36);
+        background: var(--surface-2);
+        transform: translateY(-1px);
+      }
+
+      .ticket:hover::before { opacity: 1; }
+    }
+
+    .ticket-main {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .ticket-title {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: baseline;
+    }
+
+    .team {
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 720;
+      letter-spacing: -0.01em;
+    }
+
+    .book {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .ticket-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .ticket-stat {
+      min-width: 0;
+    }
+
+    .ticket-stat strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ticket-action {
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+      align-content: center;
+      min-width: 110px;
+    }
+
+    .odds {
+      font-size: 24px;
+      line-height: 30px;
+      font-weight: 740;
+      letter-spacing: -0.012em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .badge {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 8px;
+      background: rgba(255, 255, 255, 0.38);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .drawer {
+      display: grid;
+      align-content: start;
+      animation-name: drawer-enter;
+    }
+
+    .drawer-body {
+      display: grid;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .decision {
+      padding: 16px;
+      border: 1px solid rgba(63, 58, 52, 0.24);
+      border-radius: 6px;
+      background: rgba(63, 58, 52, 0.045);
+    }
+
+    .decision h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .plus-mark {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--signal);
+      color: var(--signal);
+      font-weight: 760;
+      line-height: 1;
+    }
+
+    .math-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .math-cell {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .math-cell.positive-surface {
+      border-color: rgba(31, 122, 77, 0.22);
+      background: rgba(31, 122, 77, 0.055);
+    }
+
+    .math-cell.negative-surface {
+      border-color: rgba(178, 58, 51, 0.22);
+      background: rgba(178, 58, 51, 0.055);
+    }
+
+    .notes {
+      display: grid;
+      gap: 10px;
+    }
+
+    .note {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .note p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .positive { color: var(--success); }
+    .warn { color: var(--warning); }
+    .bad { color: var(--error); }
+    .blue { color: var(--slate); }
+
+    .history {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .history-top {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .history-chart {
+      min-height: 190px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background:
+        linear-gradient(rgba(216, 208, 195, 0.64) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(216, 208, 195, 0.64) 1px, transparent 1px),
+        rgba(255, 253, 247, 0.74);
+      background-size: 28px 28px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .history-chart svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      min-height: 190px;
+    }
+
+    .trace-primary,
+    .trace-secondary {
+      stroke-dasharray: 900;
+      stroke-dashoffset: 900;
+      animation: trace-draw 900ms var(--ease-out) 180ms forwards;
+    }
+
+    .trace-secondary { animation-delay: 260ms; }
+
+    .trace-point {
+      opacity: 0;
+      transform-origin: center;
+      animation: point-pop 220ms var(--ease-out) 820ms forwards;
+    }
+
+    .chart-label {
+      fill: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+      text-align: left;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .history-table th {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 650;
+    }
+
+    .history-table td:last-child,
+    .history-table th:last-child {
+      text-align: right;
+    }
+
+    .supporting {
+      grid-column: 1 / -1;
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 12px;
+    }
+
+    @keyframes panel-enter {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes drawer-enter {
+      from {
+        opacity: 0;
+        transform: translateX(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes trace-draw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes point-pop {
+      from {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+
+      .trace-primary,
+      .trace-secondary {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 1fr; }
+      .drawer { grid-column: 1; }
+      .support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .app { width: min(100vw - 20px, 720px); padding-top: 14px; }
+      .topbar, .ticket, .history-top { grid-template-columns: 1fr; }
+      .status-rail, .toolbar { justify-content: start; }
+      .queue-controls { grid-template-columns: 1fr; }
+      .queue-meta { justify-content: start; }
+      .ticket-grid, .math-grid, .support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ticket-action { justify-items: start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand" aria-label="d plus bet">
+        <span>d</span><span>+</span><span>bet</span>
+      </div>
+      <div class="status-rail" aria-label="System status">
+        <span class="pill ready"><span class="dot"></span>Manual review ready</span>
+        <span class="pill degraded"><span class="dot"></span>Fresh odds degraded</span>
+        <span class="pill ready"><span class="dot"></span>Background jobs ready</span>
+      </div>
+      <div class="toolbar">
+        <button class="button">Import</button>
+        <button class="button primary">Review queue</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <section class="main" aria-label="Review queue">
+        <section class="panel queue-panel">
+          <div class="section-head">
+            <div class="section-title">
+              <h1>Proposed bets</h1>
+              <p class="small-copy">Model-qualified plays waiting for review. Approve only if the live line still clears the guardrail.</p>
+            </div>
+            <span class="badge blue">MLB · RL Meta</span>
+          </div>
+
+          <div class="queue-controls" aria-label="Proposed bet controls">
+            <div class="segmented" aria-label="Bet queue filter">
+              <button class="segment" aria-pressed="true">Review 3</button>
+              <button class="segment" aria-pressed="false">Held 1</button>
+              <button class="segment" aria-pressed="false">Rejected 1</button>
+            </div>
+            <div class="queue-meta" aria-label="Queue summary">
+              <span class="meta-chip">Actionable <strong>2</strong></span>
+              <span class="meta-chip">If approved <strong>$40</strong></span>
+              <span class="meta-chip">Best edge <strong class="positive">+4.3%</strong></span>
+              <span class="meta-chip">Pending risk <strong>$184</strong></span>
+              <span class="meta-chip degraded"><span class="dot"></span>Fresh odds degraded</span>
+            </div>
+          </div>
+
+          <div class="queue">
+            <article class="ticket">
+              <div class="ticket-main">
+                <div class="ticket-title">
+                  <span class="team">SEA +1.5</span>
+                  <span class="book">Hard Rock · lineup locked</span>
+                </div>
+                <div class="ticket-grid">
+                  <div class="ticket-stat"><span class="label">Model</span><strong class="positive">63%</strong></div>
+                  <div class="ticket-stat"><span class="label">Implied</span><strong>58.7%</strong></div>
+                  <div class="ticket-stat"><span class="label">Edge</span><strong class="positive">+4.3%</strong></div>
+                  <div class="ticket-stat"><span class="label">Stake</span><strong>$25</strong></div>
+                </div>
+              </div>
+              <div class="ticket-action">
+                <div class="odds">-142</div>
+                <button class="button primary">Approve</button>
+              </div>
+            </article>
+
+            <article class="ticket">
+              <div class="ticket-main">
+                <div class="ticket-title">
+                  <span class="team">ATL -1.5</span>
+                  <span class="book">BetMGM · line moved</span>
+                </div>
+                <div class="ticket-grid">
+                  <div class="ticket-stat"><span class="label">Model</span><strong class="positive">61%</strong></div>
+                  <div class="ticket-stat"><span class="label">Implied</span><strong>45.9%</strong></div>
+                  <div class="ticket-stat"><span class="label">Move</span><strong class="warn">8 cents</strong></div>
+                  <div class="ticket-stat"><span class="label">Stake</span><strong>$15</strong></div>
+                </div>
+              </div>
+              <div class="ticket-action">
+                <div class="odds">+118</div>
+                <button class="button">Hold</button>
+              </div>
+            </article>
+
+            <article class="ticket">
+              <div class="ticket-main">
+                <div class="ticket-title">
+                  <span class="team">MIN +1.5</span>
+                  <span class="book">Fanatics · below threshold</span>
+                </div>
+                <div class="ticket-grid">
+                  <div class="ticket-stat"><span class="label">Model</span><strong>59%</strong></div>
+                  <div class="ticket-stat"><span class="label">Implied</span><strong>60.8%</strong></div>
+                  <div class="ticket-stat"><span class="label">Edge</span><strong class="bad">-1.8%</strong></div>
+                  <div class="ticket-stat"><span class="label">Stake</span><strong>$0</strong></div>
+                </div>
+              </div>
+              <div class="ticket-action">
+                <div class="odds">-155</div>
+                <button class="button">Reject</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div class="section-title">
+              <h2>Bet history</h2>
+              <p class="small-copy">Settled performance by day. Use this to see whether the model is actually compounding edge.</p>
+            </div>
+            <span class="badge positive">+3.6% ROI</span>
+          </div>
+          <div class="history">
+            <div class="history-top">
+              <div class="history-chart" aria-label="Seven day cumulative profit chart">
+                <svg viewBox="0 0 760 190" preserveAspectRatio="none" aria-hidden="true">
+                  <text class="chart-label" x="18" y="24">Cumulative P/L</text>
+                  <text class="chart-label" x="18" y="174">7 days</text>
+                  <text class="chart-label" x="675" y="24">+$216</text>
+                  <path class="trace-secondary" d="M20 132 L122 126 L224 136 L326 110 L428 116 L530 82 L740 68" fill="none" stroke="#d8d0c3" stroke-width="8" opacity="0.7"/>
+                  <path class="trace-primary" d="M20 132 L122 126 L224 136 L326 110 L428 116 L530 82 L740 68" fill="none" stroke="#4e5a61" stroke-width="3"/>
+                  <circle class="trace-point" cx="740" cy="68" r="5" fill="#1f7a4d"/>
+                </svg>
+              </div>
+              <div class="metric">
+                <div class="label">Settled Bets</div>
+                <div class="metric-value">42</div>
+                <p class="small-copy">25-17 this week</p>
+              </div>
+            </div>
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Bet</th>
+                  <th>Book</th>
+                  <th>CLV</th>
+                  <th>Result</th>
+                  <th>P/L</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>BAL +1.5</td>
+                  <td>Hard Rock</td>
+                  <td class="positive">+9c</td>
+                  <td>Won</td>
+                  <td class="positive">+$18</td>
+                </tr>
+                <tr>
+                  <td>LAD -1.5</td>
+                  <td>BetMGM</td>
+                  <td class="positive">+4c</td>
+                  <td>Won</td>
+                  <td class="positive">+$29</td>
+                </tr>
+                <tr>
+                  <td>CHC +1.5</td>
+                  <td>Fanatics</td>
+                  <td class="bad">-3c</td>
+                  <td>Lost</td>
+                  <td class="bad">-$25</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <aside class="panel drawer" aria-label="Decision details">
+        <div class="panel-head">
+          <h2>Decision packet</h2>
+          <span class="badge positive">Valid</span>
+        </div>
+        <div class="drawer-body">
+          <section class="decision">
+            <h3><span class="plus-mark">+</span> SEA +1.5 at -142</h3>
+            <div class="math-grid">
+              <div class="math-cell positive-surface">
+                <div class="label">Model</div>
+                <div class="metric-value positive">63%</div>
+              </div>
+              <div class="math-cell">
+                <div class="label">Implied</div>
+                <div class="metric-value">58.7%</div>
+              </div>
+              <div class="math-cell positive-surface">
+                <div class="label">EV</div>
+                <div class="metric-value positive">+7.1%</div>
+              </div>
+              <div class="math-cell">
+                <div class="label">Unit</div>
+                <div class="metric-value">$25</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="notes">
+            <div>
+              <div class="label">Rationale</div>
+            </div>
+            <div class="note">
+              <h3>Qualifies under RL Meta</h3>
+              <p>Confidence above 60%, rank inside top half of slate, and lineup status is locked.</p>
+            </div>
+            <div class="note">
+              <h3>Odds state</h3>
+              <p>Fresh odds are degraded globally, but this executable line is still inside the stored guardrail.</p>
+            </div>
+          </section>
+
+          <div class="actions">
+            <button class="button primary">Approve $25</button>
+            <button class="button">Add note</button>
+            <button class="button">Reject</button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel supporting" aria-label="Supporting status">
+        <div class="panel-head">
+          <h2>System status</h2>
+          <span class="badge">Supporting detail</span>
+        </div>
+        <div class="support-grid">
+          <span class="pill ready"><span class="dot"></span>MySPariEdge scraped</span>
+          <span class="pill degraded"><span class="dot"></span>Fresh odds degraded</span>
+          <span class="pill ready"><span class="dot"></span>Lineup check fresh</span>
+          <span class="pill ready"><span class="dot"></span>Background jobs ready</span>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
