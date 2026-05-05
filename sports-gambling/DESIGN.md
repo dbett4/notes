@@ -13,7 +13,7 @@ This brand is independent from LSL. Do not use LSL colors, LSL teal, LSL green g
 | Display name | `d + bet` |
 | Case | Always lowercase |
 | Spacing | Spaces on both sides of the plus sign |
-| Incorrect | `D+Bet`, `D + Bet`, `d+bet`, `dbet` |
+| Incorrect | Any uppercase, unspaced, or condensed spelling |
 
 ## Aesthetic Direction
 

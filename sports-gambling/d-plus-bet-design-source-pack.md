@@ -10,7 +10,7 @@ Current source of truth:
 - `/Users/davebettner/Documents/Personal/notes/sports-gambling/logo-exploration/app-preview.html`
 - `/Users/davebettner/Documents/Personal/notes/sports-gambling/logo-exploration/design-system-preview.html`
 
-Important correction: the current brand is `d + bet`, not `D+Bet`. It is independent from LSL. Do not use LSL teal, LSL green guidance, LSL tone, or LSL visual identity.
+Important correction: the current brand is exactly `d + bet`, lowercase with spaces around the plus. It is independent from LSL. Do not use LSL teal, LSL green guidance, LSL tone, or LSL visual identity.
 
 ## Current d + bet Design Direction
 
@@ -42,6 +42,83 @@ Non-negotiables:
 - No green as brand accent.
 
 ## Source References To Carry Forward
+
+### Peter Yang / Ravi Mehta 3-Layer Context
+
+Sources:
+
+- https://x.com/petergyang/status/2051306144199737508
+- https://x.com/petergyang/status/2050946115374321901
+- https://creatoreconomy.so/p/three-layer-system-for-context-engineering-ravi-mehta
+
+Use for:
+
+- Structuring serious AI design work into functional, visual, and data context.
+- Preventing generic AI UI by giving the agent realistic product behavior, visual constraints, and content fixtures.
+- Turning `d + bet` prompts into reusable source packs instead of one-off vibe prompts.
+
+Apply to `d + bet` as:
+
+- Functional context: alert-only betting research tool, not a sportsbook; current phase is manual review and manual placement.
+- Visual context: paper/ink/graphite, dense private analytics, exact `d + bet` brand rules, current `app-preview.html`.
+- Data context: realistic bet cards, MySPariEdge grades, book coverage, odds, stale-price states, confidence, CLV/ROI, line movement, blocked-action reasons.
+
+Do not copy:
+
+- Generic prototype examples or consumer-app visual language.
+- Any assumption that the 3-layer structure alone creates taste. It is scaffolding, not design judgment.
+
+### KirkMDesign / AI Design Workflow
+
+Sources:
+
+- https://x.com/KirkMDesign/status/2051290968565969363
+- https://www.youtube.com/watch?v=JMQ0X_si144
+- https://www.youtube.com/watch?v=nbk0PMS0tos
+- https://claude.com/plugins/figma
+- https://help.figma.com/hc/en-us/articles/39888629089175-Codex-and-Figma-Set-up-the-MCP-server
+- https://openai.com/index/figma-partnership/
+
+Use for:
+
+- Round-trip AI design workflow: source pack -> design critique -> file edits -> screenshot review -> correction loop.
+- Reusable design-source folders rather than repeated prompt dumps.
+- Critique prompts that name purpose, hierarchy, weakest element, and next correction.
+
+Apply to `d + bet` as:
+
+- Organize design references by visual intent: quiet operational dashboard, dense betting review queue, premium private ledger, executive signal summary.
+- Keep design packs selective: references, why they matter, forbidden cliches, token guidance, component guidance, and realistic content fixtures.
+- Use Figma only as one canvas in the loop; the source of truth remains this pack plus `DESIGN.md` and code.
+
+Do not copy:
+
+- Competitor brand surfaces, Mobbin-style generic SaaS polish, or Figma-generated layouts without code/screenshot review.
+
+### Motion Core
+
+Sources:
+
+- https://x.com/madebyhex/status/2051062415345721643
+- https://motion-core.dev/
+- https://motion-core.dev/docs/introduction
+- https://madewithsvelte.com/motion-core
+
+Use for:
+
+- Motion restraint and state-change polish.
+- Interaction ideas even if the active app remains React/HTML rather than Svelte.
+
+Apply to `d + bet` as:
+
+- Motion should clarify state: line moved, bet selected, drawer opened, price stale, card added to betslip, action blocked, provider degraded.
+- Keep most motion at 120-240ms using transform/opacity.
+- Do not animate critical numeric changes except a short crossfade or stable old/new comparison.
+
+Do not copy:
+
+- Svelte dependency choices by default.
+- Spectacle, 3D, or motion that makes betting review feel slower.
 
 ### Jakub Krehel / Make Interfaces Feel Better
 
@@ -251,11 +328,23 @@ Apply to `d + bet` as:
 ## Design Priorities For The Next Session
 
 1. Preserve current `d + bet` identity: paper/ink/graphite, lowercase wordmark, no LSL.
-2. Refine the app preview rather than redesigning it.
-3. Tighten scan hierarchy for betting review: proposed bets, odds, EV, line movement, stake, confidence, and action.
-4. Make the drawer/selected ticket feel attached without adding decorative motion.
-5. Improve state surfaces: empty, loading, degraded provider, stale odds, blocked action, placed, rejected.
-6. Keep everything dense, calm, and private.
+2. Use the 3-layer context model: functional behavior, visual system, realistic betting data/content.
+3. Refine the app preview rather than redesigning it.
+4. Tighten scan hierarchy for betting review: proposed bets, odds, EV, line movement, stake, confidence, and action.
+5. Make the drawer/selected ticket feel attached without adding decorative motion.
+6. Improve state surfaces: empty, loading, degraded provider, stale odds, blocked action, placed, rejected.
+7. Keep everything dense, calm, and private.
+8. Run a screenshot critique loop after edits; do not rely on code inspection alone.
+
+## Adjacent Non-Design Research Queue
+
+These X bookmark sources are relevant but should not drive the immediate visual design pass:
+
+- Matt Pocock skills: borrow skill/source-pack structure, not visual style. Source: https://github.com/mattpocock/skills
+- Vercel `deepsec`: borrow scan -> investigate -> revalidate -> export as a future QA/review harness. Source: https://vercel.com/blog/introducing-deepsec-find-and-fix-vulnerabilities-in-your-code-base
+- OpenAI `codex-plugin-cc`: test later for Claude/Codex review delegation. Source: https://github.com/openai/codex-plugin-cc/blob/main/README.md
+- Open Slide: test later for a d + bet weekly edge report deck. Source: https://open-slide.dev/
+- DeepSeek V4: test later for cheap long-context synthesis using non-client, non-sensitive fixtures. Source: https://api-docs.deepseek.com/news/news260424
 
 ## Copyable Prompt
 
@@ -291,6 +380,9 @@ Current direction to preserve:
 - tabular numerals for odds, EV, ROI, units, bankroll, and CLV
 
 Use the references this way:
+- Peter Yang / Ravi Mehta 3-layer context: structure the work into functional, visual, and data context before editing.
+- KirkMDesign AI design workflow: use this source pack as reusable design context, then critique, edit, screenshot, and correct.
+- Motion Core: use motion to clarify state changes only; no spectacle.
 - Jakub Krehel / Make Interfaces Feel Better: micro-polish, optical alignment, spacing, surfaces, button feel, restrained motion.
 - Jakub shared layout animations + Motion docs: selected ticket to drawer continuity only; keep motion subtle.
 - MDN scrollbar-gutter: prevent queue/table/drawer layout shift.
@@ -304,10 +396,14 @@ Use the references this way:
 Concrete task:
 1. Read DESIGN.md and the source pack first.
 2. Inspect app-preview.html and design-system-preview.html.
-3. Identify 5-8 high-impact refinements that preserve the current direction.
-4. Update the relevant preview/design files.
-5. Verify visually at desktop and mobile widths.
-6. Summarize what changed and which source-pack references drove each change.
+3. Write a compact 3-layer working brief:
+   - Functional: what the current screen must help Dave decide.
+   - Visual: what hierarchy and tone it must preserve.
+   - Data: what realistic bet states/content are present or missing.
+4. Identify 5-8 high-impact refinements that preserve the current direction.
+5. Update the relevant preview/design files.
+6. Verify visually at desktop and mobile widths.
+7. Summarize what changed and which source-pack references drove each change.
 
 Constraints:
 - No teal.

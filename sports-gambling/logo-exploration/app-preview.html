@@ -11,26 +11,29 @@
       --surface: #fffaf0;
       --surface-2: #fffdf7;
       --line: #d8d0c3;
+      --line-strong: #b9afa0;
       --muted: #79736a;
       --signal: #3f3a34;
       --slate: #4e5a61;
       --olive: #5e6048;
       --success: #1f7a4d;
+      --success-soft: #dfeee5;
       --warning: #6f5b3e;
       --error: #b23a33;
+      --error-soft: #f1dedb;
       --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
       --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
     }
 
     * { box-sizing: border-box; }
 
+    html {
+      scrollbar-gutter: stable;
+    }
+
     body {
       margin: 0;
-      background:
-        linear-gradient(rgba(216, 208, 195, 0.42) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(216, 208, 195, 0.42) 1px, transparent 1px),
-        var(--paper);
-      background-size: 32px 32px;
+      background: var(--paper);
       color: var(--ink);
       font-family: Geist, "Geist Sans", Satoshi, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-feature-settings: "liga", "ss05", "tnum";
@@ -39,19 +42,19 @@
     button, input { font: inherit; }
 
     .app {
-      width: min(1440px, calc(100vw - 28px));
+      width: min(1520px, calc(100vw - 28px));
       min-height: 100vh;
       margin: 0 auto;
-      padding: 20px 0 36px;
+      padding: 18px 0 34px;
     }
 
     .topbar {
       display: grid;
       grid-template-columns: auto 1fr auto;
-      gap: 20px;
+      gap: 18px;
       align-items: center;
-      padding: 0 0 18px;
-      border-bottom: 1px solid var(--line);
+      padding: 0 0 16px;
+      border-bottom: 1px solid var(--line-strong);
     }
 
     .brand {
@@ -71,7 +74,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      justify-content: center;
+      justify-content: start;
     }
 
     .pill {
@@ -113,10 +116,10 @@
     }
 
     .button {
-      min-height: 40px;
+      min-height: 38px;
       border: 1px solid var(--line);
       border-radius: 4px;
-      padding: 0 14px;
+      padding: 0 13px;
       background: var(--surface);
       color: var(--ink);
       cursor: pointer;
@@ -127,39 +130,96 @@
     }
 
     .button:hover { background: var(--surface-2); }
-    .button:active { transform: scale(0.985); }
+    .button:active { transform: scale(0.97); }
     .button:focus-visible { outline: 2px solid var(--slate); outline-offset: 2px; }
     .button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .button.betslip-live {
+      position: relative;
+      padding-left: 30px;
+      overflow: hidden;
+    }
+
+    .button.betslip-live::before {
+      content: "";
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(31, 122, 77, 0.16);
+      transform: translateY(-50%);
+    }
+
+    .button.betslip-live::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 0 38%, rgba(255, 255, 255, 0.2) 48%, transparent 58% 100%);
+      transform: translateX(-115%);
+      animation: slip-sheen 3.8s var(--ease-in-out) infinite;
+      pointer-events: none;
+    }
+
+    .button.approve-soft {
+      border-color: rgba(63, 58, 52, 0.28);
+      background: rgba(63, 58, 52, 0.06);
+      color: var(--signal);
+    }
+
+    .button:disabled,
+    .button.inactive {
+      background: rgba(255, 250, 240, 0.5);
+      color: var(--muted);
+      border-color: rgba(216, 208, 195, 0.72);
+      cursor: not-allowed;
+      opacity: 0.68;
+    }
     .toolbar .button:active,
     .drawer .actions .button:active { transform: scale(0.97); }
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
-      gap: 18px;
-      padding-top: 18px;
+      grid-template-columns: minmax(0, 1fr) 392px;
+      gap: 16px;
+      padding-top: 16px;
       align-items: start;
     }
 
     .panel {
       background: rgba(255, 250, 240, 0.92);
       border: 1px solid var(--line);
-      border-radius: 6px;
-      box-shadow: rgba(23, 23, 23, 0.04) 0 2px 2px 0;
-      animation: panel-enter 320ms var(--ease-out) both;
+      border-radius: 4px;
+      min-width: 0;
     }
-
-    .main .panel { animation-delay: 40ms; }
-    .drawer { animation-delay: 120ms; }
-    .supporting { animation-delay: 160ms; }
 
     .panel-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 16px 16px 12px;
+      gap: 14px;
+      padding: 14px 16px 12px;
       border-bottom: 1px solid var(--line);
+    }
+
+    .board-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 16px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .board-kicker::before {
+      content: "";
+      width: 18px;
+      height: 1px;
+      background: var(--line-strong);
     }
 
     h1, h2, h3, p { margin: 0; }
@@ -221,16 +281,17 @@
 
     .main {
       display: grid;
-      gap: 12px;
+      gap: 14px;
       align-content: start;
+      min-width: 0;
     }
 
     .section-head {
       display: flex;
       justify-content: space-between;
-      gap: 18px;
+      gap: 16px;
       align-items: end;
-      padding: 18px 20px 14px;
+      padding: 15px 18px 12px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -239,34 +300,214 @@
       gap: 4px;
     }
 
-    .queue-panel .queue {
-      padding: 12px;
+    .decision-strip {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(90deg, rgba(63, 58, 52, 0.055), transparent 62%),
+        rgba(255, 253, 247, 0.44);
+    }
+
+    .decision-strip strong {
+      color: var(--ink);
+      font-weight: 720;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .decision-strip span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .decision-strip .primary-signal {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 620;
     }
 
     .queue-controls {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
-      padding: 10px 12px;
+      padding: 8px 12px;
       border-bottom: 1px solid var(--line);
       background: rgba(255, 253, 247, 0.44);
+    }
+
+    .book-coverage {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 247, 0.28);
+    }
+
+    .coverage-chip {
+      min-height: 26px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 7px;
+      border: 1px solid rgba(185, 175, 160, 0.76);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.32);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+      white-space: nowrap;
+      transition: transform 140ms var(--ease-out), border-color 160ms ease, background 160ms ease;
+    }
+
+    .coverage-chip:hover {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, 0.52);
+    }
+
+    .coverage-chip strong {
+      color: var(--ink);
+      font-weight: 680;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .route-context {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 247, 0.36);
+    }
+
+    .route-copy {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .route-copy strong {
+      color: var(--ink);
+      font-weight: 680;
+    }
+
+    .state-picker {
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.46);
+      color: var(--ink);
+      padding: 0 28px 0 9px;
+      font-size: 13px;
+      font-weight: 560;
+    }
+
+    .refresh-strip {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 247, 0.28);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .refresh-meter {
+      width: 18px;
+      height: 18px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      color: var(--slate);
+    }
+
+    .refresh-meter::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: refresh-spin 700ms linear infinite;
+    }
+
+    .refresh-copy {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .refresh-copy strong {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .refresh-action {
+      min-height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 9px;
+      background: rgba(255, 255, 255, 0.32);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 560;
+      cursor: pointer;
+    }
+
+    .pull-refresh {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(63, 58, 52, 0.045);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .pull-refresh .refresh-meter {
+      transform: rotate(-35deg);
+      animation: none;
+    }
+
+    .pull-refresh .refresh-meter::before {
+      animation: none;
+      border-right-color: transparent;
+      opacity: 0.78;
     }
 
     .segmented {
       display: inline-flex;
       width: fit-content;
-      padding: 3px;
+      padding: 2px;
       border: 1px solid var(--line);
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.36);
     }
 
     .segment {
-      min-height: 30px;
+      min-height: 29px;
       border: 0;
       border-radius: 4px;
-      padding: 0 10px;
+      padding: 0 9px;
       background: transparent;
       color: var(--muted);
       cursor: pointer;
@@ -286,15 +527,15 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: end;
-      gap: 8px;
+      gap: 7px;
     }
 
     .meta-chip {
-      min-height: 30px;
+      min-height: 29px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 0 9px;
+      gap: 5px;
+      padding: 0 8px;
       border: 1px solid var(--line);
       border-radius: 4px;
       background: rgba(255, 255, 255, 0.34);
@@ -310,112 +551,274 @@
       font-variant-numeric: tabular-nums;
     }
 
-    .queue {
-      display: grid;
-      gap: 10px;
+    .queue-table-wrap {
+      overflow-x: auto;
+      scrollbar-gutter: stable;
     }
 
-    .ticket {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: var(--surface);
-      position: relative;
-      overflow: hidden;
-      animation: panel-enter 320ms var(--ease-out) both;
-      transition: transform 160ms var(--ease-out), border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    .queue-table {
+      width: 100%;
+      min-width: 940px;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+      table-layout: fixed;
     }
 
-    .ticket:nth-child(1) { animation-delay: 120ms; }
-    .ticket:nth-child(2) { animation-delay: 160ms; }
-    .ticket:nth-child(3) { animation-delay: 200ms; }
-
-    .ticket:active { transform: scale(0.995); }
-
-    .ticket::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: 4px;
-      background: var(--signal);
-      opacity: 0.56;
-      transition: opacity 160ms ease;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .ticket:hover {
-        border-color: rgba(63, 58, 52, 0.36);
-        background: var(--surface-2);
-        transform: translateY(-1px);
-      }
-
-      .ticket:hover::before { opacity: 1; }
-    }
-
-    .ticket-main {
-      display: grid;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .ticket-title {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: baseline;
-    }
-
-    .team {
-      font-size: 20px;
-      line-height: 28px;
-      font-weight: 720;
-      letter-spacing: -0.01em;
-    }
-
-    .book {
-      color: var(--muted);
+    .queue-table th,
+    .queue-table td {
+      padding: 7px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
       font-size: 13px;
       line-height: 18px;
     }
 
-    .ticket-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .ticket-stat {
-      min-width: 0;
-    }
-
-    .ticket-stat strong {
-      display: block;
-      margin-top: 4px;
-      font-size: 14px;
-      line-height: 20px;
+    .queue-table th {
+      color: var(--muted);
+      background: rgba(255, 253, 247, 0.68);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
       font-weight: 650;
-      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
-    .ticket-action {
+    .queue-table th:first-child,
+    .queue-table td:first-child {
+      width: 38px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .queue-table th:nth-child(2),
+    .queue-table td:nth-child(2) {
+      width: 34%;
+      text-align: left;
+    }
+
+    .queue-table th:nth-child(3),
+    .queue-table td:nth-child(3),
+    .queue-table th:nth-child(4),
+    .queue-table td:nth-child(4),
+    .queue-table th:nth-child(5),
+    .queue-table td:nth-child(5),
+    .queue-table th:nth-child(6),
+    .queue-table td:nth-child(6),
+    .queue-table th:nth-child(7),
+    .queue-table td:nth-child(7),
+    .queue-table th:nth-child(8),
+    .queue-table td:nth-child(8) {
+      width: 8%;
+    }
+
+    .queue-table th:last-child,
+    .queue-table td:last-child {
+      width: 116px;
+    }
+
+    .queue-table tbody tr {
+      animation: row-enter 320ms var(--ease-out) both;
+      transition: background 120ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+    .queue-table tbody tr:nth-child(1) { animation-delay: 8ms; }
+    .queue-table tbody tr:nth-child(2) { animation-delay: 16ms; }
+    .queue-table tbody tr:nth-child(3) { animation-delay: 24ms; }
+    .queue-table tbody tr:nth-child(4) { animation-delay: 32ms; }
+    .queue-table tbody tr:nth-child(5) { animation-delay: 40ms; }
+    .queue-table tbody tr:nth-child(6) { animation-delay: 48ms; }
+    .queue-table tbody tr:nth-child(7) { animation-delay: 56ms; }
+    .queue-table tbody tr:nth-child(8) { animation-delay: 64ms; }
+    .queue-table tbody tr:nth-child(9) { animation-delay: 72ms; }
+    .queue-table tbody tr:nth-child(10) { animation-delay: 80ms; }
+    .queue-table tbody tr:nth-child(11) { animation-delay: 88ms; }
+
+    .queue-table tbody tr.selected {
+      background: rgba(63, 58, 52, 0.055);
+      box-shadow: inset 3px 0 0 var(--signal);
+    }
+
+    .queue-table tbody tr.needs-refresh {
+      background: rgba(111, 91, 62, 0.045);
+    }
+
+    .queue-table tbody tr.blocked-row {
+      background: rgba(178, 58, 51, 0.035);
+      opacity: 0.88;
+    }
+
+    .queue-table tbody tr:hover {
+      background: rgba(255, 253, 247, 0.74);
+    }
+
+    .market-cell {
       display: grid;
-      gap: 8px;
-      justify-items: end;
-      align-content: center;
-      min-width: 110px;
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 7px;
+      align-items: center;
+      min-width: 150px;
+      text-align: left;
+    }
+
+    .rank {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .matchup-marks {
+      display: flex;
+      align-items: center;
+      width: 40px;
+    }
+
+    .team-mark {
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--surface-2);
+      color: var(--ink);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 760;
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+
+    .team-mark.opponent {
+      width: 21px;
+      height: 21px;
+      margin-left: -8px;
+      background: var(--paper);
+      opacity: 0.82;
+    }
+
+    .team-mark img {
+      width: 22px;
+      height: 22px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .team-mark.opponent img {
+      width: 16px;
+      height: 16px;
+    }
+
+    .market-copy {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+      text-align: left;
+    }
+
+    .market {
+      font-size: 13px;
+      line-height: 18px;
+      font-weight: 680;
+    }
+
+    .opponent-text {
+      color: var(--muted);
+      font-weight: 520;
+    }
+
+    .book {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 15px;
+    }
+
+    .book-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .book-glyph {
+      width: 14px;
+      height: 14px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.42);
+      color: var(--signal);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 780;
+      letter-spacing: 0;
+    }
+
+    .book-glyph.hr { color: #1b6b48; }
+    .book-glyph.mgm { color: #6f5b3e; }
+    .book-glyph.fn { color: #4e5a61; }
+    .book-glyph.dk { color: #117d3f; }
+    .book-glyph.fd { color: #1666b7; }
+    .book-glyph.cz { color: #8a642f; }
+    .book-glyph.es { color: #b23a33; }
+    .book-glyph.b365 { color: #1f7a4d; }
+    .book-glyph.br { color: #2f6b8a; }
+    .book-glyph.nv { color: #171717; }
+    .book-glyph.px { color: #2f6b8a; }
+    .book-glyph.b365 {
+      width: 20px;
+      font-size: 8px;
+    }
+
+    .num,
+    .queue-table td:nth-child(n+2) {
+      text-align: right;
+    }
+
+    .queue-table th:nth-child(n+2) {
+      text-align: right;
     }
 
     .odds {
-      font-size: 24px;
-      line-height: 30px;
-      font-weight: 740;
-      letter-spacing: -0.012em;
+      font-weight: 720;
       font-variant-numeric: tabular-nums;
+    }
+
+    .state-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 15px;
+    }
+
+    .state-note::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--line-strong);
+    }
+
+    .state-note.warn::before { background: var(--warning); }
+    .state-note.bad::before { background: var(--error); }
+
+    .row-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .queue-table .button {
+      min-height: 26px;
+      padding: 0 8px;
+      font-size: 12px;
     }
 
     .badge {
@@ -431,34 +834,47 @@
       line-height: 16px;
     }
 
+    .badge.warning {
+      border-color: rgba(111, 91, 62, 0.28);
+      background: rgba(111, 91, 62, 0.07);
+      color: var(--warning);
+    }
+
+    .badge.blocked {
+      border-color: rgba(178, 58, 51, 0.24);
+      background: rgba(178, 58, 51, 0.06);
+      color: var(--error);
+    }
+
     .drawer {
       display: grid;
       align-content: start;
-      animation-name: drawer-enter;
     }
 
     .drawer-body {
       display: grid;
-      gap: 16px;
-      padding: 16px;
+      gap: 14px;
+      padding: 14px;
     }
 
     .decision {
-      padding: 16px;
+      padding: 12px;
       border: 1px solid rgba(63, 58, 52, 0.24);
-      border-radius: 6px;
+      border-radius: 4px;
       background: rgba(63, 58, 52, 0.045);
     }
 
     .decision h3 {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
+      font-size: 15px;
+      line-height: 22px;
     }
 
     .plus-mark {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       display: grid;
       place-items: center;
       border: 1px solid var(--signal);
@@ -470,15 +886,46 @@
     .math-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 14px;
+      gap: 7px;
+      margin-top: 10px;
     }
 
     .math-cell {
-      padding: 12px;
+      padding: 9px;
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 4px;
       background: rgba(255, 255, 255, 0.42);
+    }
+
+    .math-cell .metric-value {
+      margin-top: 4px;
+      font-size: 26px;
+      line-height: 31px;
+    }
+
+    .inspection-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .inspection-table th,
+    .inspection-table td {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .inspection-table th {
+      color: var(--muted);
+      font-weight: 520;
+    }
+
+    .inspection-table td {
+      text-align: right;
+      font-weight: 650;
     }
 
     .math-cell.positive-surface {
@@ -493,20 +940,61 @@
 
     .notes {
       display: grid;
-      gap: 10px;
+      gap: 7px;
+    }
+
+    .line-movement {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 253, 247, 0.52);
+    }
+
+    .line-movement svg {
+      width: 100%;
+      height: 72px;
+      display: block;
+    }
+
+    .line-movement .axis {
+      stroke: var(--line);
+      stroke-width: 1;
+    }
+
+    .line-movement .line {
+      fill: none;
+      stroke: var(--slate);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .line-movement .acceptable {
+      stroke: var(--signal);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+      opacity: 0.7;
+    }
+
+    .line-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 15px;
+      font-variant-numeric: tabular-nums;
     }
 
     .note {
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.3);
+      padding: 0 0 7px;
+      border-bottom: 1px solid var(--line);
     }
 
     .note p {
       color: var(--muted);
-      font-size: 13px;
-      line-height: 18px;
+      font-size: 12px;
+      line-height: 17px;
     }
 
     .positive { color: var(--success); }
@@ -516,21 +1004,21 @@
 
     .history {
       display: grid;
-      gap: 14px;
-      padding: 16px;
+      gap: 12px;
+      padding: 14px;
     }
 
     .history-top {
       display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
+      grid-template-columns: 1fr 200px;
+      gap: 14px;
       align-items: start;
     }
 
     .history-chart {
-      min-height: 190px;
+      min-height: 198px;
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 4px;
       background:
         linear-gradient(rgba(216, 208, 195, 0.64) 1px, transparent 1px),
         linear-gradient(90deg, rgba(216, 208, 195, 0.64) 1px, transparent 1px),
@@ -544,22 +1032,21 @@
       width: 100%;
       height: 100%;
       display: block;
-      min-height: 190px;
+      min-height: 198px;
     }
 
     .trace-primary,
     .trace-secondary {
-      stroke-dasharray: 900;
-      stroke-dashoffset: 900;
-      animation: trace-draw 900ms var(--ease-out) 180ms forwards;
+      stroke-dasharray: 960;
+      stroke-dashoffset: 960;
+      transition: stroke-dashoffset 1100ms var(--ease-out);
     }
-
-    .trace-secondary { animation-delay: 260ms; }
 
     .trace-point {
       opacity: 0;
       transform-origin: center;
-      animation: point-pop 220ms var(--ease-out) 820ms forwards;
+      transform: scale(0.7);
+      transition: opacity 220ms var(--ease-out) 900ms, transform 220ms var(--ease-out) 900ms;
     }
 
     .chart-label {
@@ -570,6 +1057,75 @@
       text-transform: uppercase;
     }
 
+    .profit-area {
+      opacity: 0;
+      transition: opacity 420ms ease 260ms;
+    }
+
+    .history.in-view .trace-primary,
+    .history.in-view .trace-secondary {
+      stroke-dashoffset: 0;
+    }
+
+    .history.in-view .trace-point,
+    .history.in-view .profit-area {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .profit-stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .profit-card {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 253, 247, 0.54);
+      padding: 11px;
+    }
+
+    .profit-card.primary-stat {
+      background: linear-gradient(180deg, rgba(223, 238, 229, 0.76), rgba(255, 253, 247, 0.58));
+      border-color: rgba(31, 122, 77, 0.2);
+    }
+
+    .profit-value {
+      margin-top: 4px;
+      color: var(--success);
+      font-size: 32px;
+      line-height: 36px;
+      font-weight: 760;
+      letter-spacing: -0.015em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .profit-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mini-stat {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 9px;
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .mini-stat strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+      line-height: 22px;
+      font-weight: 720;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mini-stat.loss strong {
+      color: var(--error);
+    }
+
     .history-table {
       width: 100%;
       border-collapse: collapse;
@@ -578,7 +1134,7 @@
 
     .history-table th,
     .history-table td {
-      padding: 10px 0;
+      padding: 8px 0;
       border-top: 1px solid var(--line);
       text-align: left;
       font-size: 13px;
@@ -605,45 +1161,8 @@
     .support-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      padding: 12px;
-    }
-
-    @keyframes panel-enter {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes drawer-enter {
-      from {
-        opacity: 0;
-        transform: translateX(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    @keyframes trace-draw {
-      to { stroke-dashoffset: 0; }
-    }
-
-    @keyframes point-pop {
-      from {
-        opacity: 0;
-        transform: scale(0.92);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+      gap: 8px;
+      padding: 10px;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -658,6 +1177,17 @@
       .trace-secondary {
         stroke-dashoffset: 0;
       }
+
+      .trace-point,
+      .profit-area {
+        opacity: 1;
+        transform: none;
+      }
+
+      .queue-table tbody tr,
+      .button.betslip-live::after {
+        animation: none;
+      }
     }
 
     @media (max-width: 1180px) {
@@ -668,12 +1198,40 @@
 
     @media (max-width: 760px) {
       .app { width: min(100vw - 20px, 720px); padding-top: 14px; }
-      .topbar, .ticket, .history-top { grid-template-columns: 1fr; }
+      .topbar, .history-top { grid-template-columns: 1fr; }
       .status-rail, .toolbar { justify-content: start; }
+      .section-head { display: grid; align-items: start; }
+      .section-head .badge { justify-self: start; }
       .queue-controls { grid-template-columns: 1fr; }
+      .refresh-strip { grid-template-columns: auto 1fr; }
+      .refresh-action { display: none; }
+      .pull-refresh { display: flex; }
+      .route-context { grid-template-columns: 1fr; }
+      .state-picker { width: 100%; }
       .queue-meta { justify-content: start; }
-      .ticket-grid, .math-grid, .support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .ticket-action { justify-items: start; }
+      .decision-strip { grid-template-columns: 1fr 1fr; }
+      .math-grid, .support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @keyframes refresh-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes row-enter {
+      from {
+        opacity: 0.88;
+        transform: translateY(2px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes slip-sheen {
+      0%, 62% { transform: translateX(-115%); }
+      100% { transform: translateX(115%); }
     }
   </style>
 </head>
@@ -684,13 +1242,12 @@
         <span>d</span><span>+</span><span>bet</span>
       </div>
       <div class="status-rail" aria-label="System status">
-        <span class="pill ready"><span class="dot"></span>Manual review ready</span>
         <span class="pill degraded"><span class="dot"></span>Fresh odds degraded</span>
-        <span class="pill ready"><span class="dot"></span>Background jobs ready</span>
+        <span class="pill ready"><span class="dot"></span>Lineups locked</span>
       </div>
       <div class="toolbar">
         <button class="button">Import</button>
-        <button class="button primary">Review queue</button>
+        <button class="button primary betslip-live">Betslip 5</button>
       </div>
     </header>
 
@@ -699,84 +1256,393 @@
         <section class="panel queue-panel">
           <div class="section-head">
             <div class="section-title">
-              <h1>Proposed bets</h1>
-              <p class="small-copy">Model-qualified plays waiting for review. Approve only if the live line still clears the guardrail.</p>
+              <div class="board-kicker">MLB run-line model</div>
+              <h1>Executable board</h1>
+              <p class="small-copy">Executable model-qualified plays with a current book price inside the guardrail.</p>
             </div>
             <span class="badge blue">MLB · RL Meta</span>
           </div>
 
           <div class="queue-controls" aria-label="Proposed bet controls">
             <div class="segmented" aria-label="Bet queue filter">
-              <button class="segment" aria-pressed="true">Review 3</button>
-              <button class="segment" aria-pressed="false">Held 1</button>
-              <button class="segment" aria-pressed="false">Rejected 1</button>
+              <button class="segment" aria-pressed="true">Executable 11</button>
+              <button class="segment" aria-pressed="false">Needs refresh 3</button>
+              <button class="segment" aria-pressed="false">Audit 12</button>
             </div>
             <div class="queue-meta" aria-label="Queue summary">
-              <span class="meta-chip">Actionable <strong>2</strong></span>
-              <span class="meta-chip">If approved <strong>$40</strong></span>
+              <span class="meta-chip">Visible <strong>11</strong></span>
+              <span class="meta-chip">If approved <strong>$225</strong></span>
               <span class="meta-chip">Best edge <strong class="positive">+4.3%</strong></span>
-              <span class="meta-chip">Pending risk <strong>$184</strong></span>
-              <span class="meta-chip degraded"><span class="dot"></span>Fresh odds degraded</span>
+              <span class="meta-chip">Open exposure <strong>$467</strong></span>
+              <span class="meta-chip degraded"><span class="dot"></span>3 hidden stale lines</span>
             </div>
           </div>
 
-          <div class="queue">
-            <article class="ticket">
-              <div class="ticket-main">
-                <div class="ticket-title">
-                  <span class="team">SEA +1.5</span>
-                  <span class="book">Hard Rock · lineup locked</span>
-                </div>
-                <div class="ticket-grid">
-                  <div class="ticket-stat"><span class="label">Model</span><strong class="positive">63%</strong></div>
-                  <div class="ticket-stat"><span class="label">Implied</span><strong>58.7%</strong></div>
-                  <div class="ticket-stat"><span class="label">Edge</span><strong class="positive">+4.3%</strong></div>
-                  <div class="ticket-stat"><span class="label">Stake</span><strong>$25</strong></div>
-                </div>
-              </div>
-              <div class="ticket-action">
-                <div class="odds">-142</div>
-                <button class="button primary">Approve</button>
-              </div>
-            </article>
+          <div class="decision-strip" aria-label="Current board decision summary">
+            <span class="primary-signal">Top executable: <strong>SEA +1.5</strong> at <strong>-142</strong></span>
+            <span>Edge <strong class="positive">+4.3%</strong></span>
+            <span>Approve ceiling <strong>-151</strong></span>
+            <span>Risk if approved <strong>$397</strong></span>
+          </div>
 
-            <article class="ticket">
-              <div class="ticket-main">
-                <div class="ticket-title">
-                  <span class="team">ATL -1.5</span>
-                  <span class="book">BetMGM · line moved</span>
-                </div>
-                <div class="ticket-grid">
-                  <div class="ticket-stat"><span class="label">Model</span><strong class="positive">61%</strong></div>
-                  <div class="ticket-stat"><span class="label">Implied</span><strong>45.9%</strong></div>
-                  <div class="ticket-stat"><span class="label">Move</span><strong class="warn">8 cents</strong></div>
-                  <div class="ticket-stat"><span class="label">Stake</span><strong>$15</strong></div>
-                </div>
-              </div>
-              <div class="ticket-action">
-                <div class="odds">+118</div>
-                <button class="button">Hold</button>
-              </div>
-            </article>
+          <div class="route-context" aria-label="Location routing">
+            <div class="route-copy">
+              <span class="pill ready"><span class="dot"></span>Routing from <strong data-route-state>Illinois</strong></span>
+              <span>Use state availability before opening a sportsbook deeplink.</span>
+            </div>
+            <label class="route-copy">
+              <span>State</span>
+              <select class="state-picker" aria-label="Current betting state" data-state-picker>
+                <option value="IL" selected>Illinois</option>
+                <option value="IA">Iowa soon</option>
+              </select>
+            </label>
+          </div>
 
-            <article class="ticket">
-              <div class="ticket-main">
-                <div class="ticket-title">
-                  <span class="team">MIN +1.5</span>
-                  <span class="book">Fanatics · below threshold</span>
-                </div>
-                <div class="ticket-grid">
-                  <div class="ticket-stat"><span class="label">Model</span><strong>59%</strong></div>
-                  <div class="ticket-stat"><span class="label">Implied</span><strong>60.8%</strong></div>
-                  <div class="ticket-stat"><span class="label">Edge</span><strong class="bad">-1.8%</strong></div>
-                  <div class="ticket-stat"><span class="label">Stake</span><strong>$0</strong></div>
-                </div>
-              </div>
-              <div class="ticket-action">
-                <div class="odds">-155</div>
-                <button class="button">Reject</button>
-              </div>
-            </article>
+          <div class="book-coverage" aria-label="Sportsbook coverage">
+            <span class="coverage-chip"><span class="book-glyph hr" aria-label="Hard Rock">HR</span>Hard Rock <strong>3</strong></span>
+            <span class="coverage-chip"><span class="book-glyph dk" aria-label="DraftKings">DK</span>DraftKings <strong>1</strong></span>
+            <span class="coverage-chip"><span class="book-glyph fd" aria-label="FanDuel">FD</span>FanDuel <strong>1</strong></span>
+            <span class="coverage-chip"><span class="book-glyph mgm" aria-label="BetMGM">M</span>BetMGM <strong>1</strong></span>
+            <span class="coverage-chip"><span class="book-glyph fn" aria-label="Fanatics">F</span>Fanatics <strong>1</strong></span>
+            <span class="coverage-chip"><span class="book-glyph cz" aria-label="Caesars">CZ</span>Caesars <strong>1</strong></span>
+            <span class="coverage-chip"><span class="book-glyph b365" aria-label="bet365">365</span>bet365 <strong>1</strong></span>
+            <span class="coverage-chip"><span class="book-glyph nv" aria-label="Novig">N</span>Novig <strong>1</strong></span>
+            <span class="coverage-chip"><span class="book-glyph px" aria-label="ProphetX">PX</span>ProphetX <strong>1</strong></span>
+          </div>
+
+          <div class="pull-refresh" aria-label="Pull to refresh">
+            <span class="refresh-meter" aria-hidden="true"></span>
+            <span>Pull to refresh odds, lineups, and executable prices</span>
+          </div>
+
+          <div class="refresh-strip" aria-label="Refresh status">
+            <span class="refresh-meter" aria-hidden="true"></span>
+            <div class="refresh-copy">
+              <span><strong>Last refresh</strong> 2:11p</span>
+              <span>Odds 42s old</span>
+              <span>Lineups locked</span>
+            </div>
+            <button class="refresh-action">Refresh now</button>
+          </div>
+
+          <div class="queue-table-wrap">
+            <table class="queue-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Market</th>
+                  <th>Odds</th>
+                  <th>Model</th>
+                  <th>Implied</th>
+                  <th>Edge</th>
+                  <th>CLV Req.</th>
+                  <th>Stake</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="selected">
+                  <td><span class="rank">01</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="Seattle Mariners logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="Seattle Mariners"></span>
+                        <span class="team-mark opponent" aria-label="Texas Rangers logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/tex.png" alt="Texas Rangers"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">SEA +1.5 <span class="opponent-text">vs TEX</span></span>
+                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock">HR</span>Hard Rock · lineup locked · 2:11p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">-142</td>
+                  <td class="positive">63.0%</td>
+                  <td>58.7%</td>
+                  <td class="positive">+4.3%</td>
+                  <td>-151</td>
+                  <td>$25</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button primary">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="rank">02</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="Baltimore Orioles logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/bal.png" alt="Baltimore Orioles"></span>
+                        <span class="team-mark opponent" aria-label="Boston Red Sox logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/bos.png" alt="Boston Red Sox"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">BAL ML <span class="opponent-text">vs BOS</span></span>
+                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock">HR</span>Hard Rock · pitcher edge · 1:52p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">+104</td>
+                  <td class="positive">53.8%</td>
+                  <td>49.0%</td>
+                  <td class="positive">+4.8%</td>
+                  <td>-102</td>
+                  <td>$20</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button approve-soft">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="rank">03</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="Chicago Cubs logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" alt="Chicago Cubs"></span>
+                        <span class="team-mark opponent" aria-label="Cincinnati Reds logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/cin.png" alt="Cincinnati Reds"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">CHC +1.5 <span class="opponent-text">@ CIN</span></span>
+                        <span class="book book-line"><span class="book-glyph fn" aria-label="Fanatics">F</span>Fanatics · weather checked · 1:47p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">-128</td>
+                  <td class="positive">60.2%</td>
+                  <td>56.1%</td>
+                  <td class="positive">+4.1%</td>
+                  <td>-137</td>
+                  <td>$25</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button approve-soft">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="rank">04</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="Los Angeles Dodgers logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/lad.png" alt="Los Angeles Dodgers"></span>
+                        <span class="team-mark opponent" aria-label="Arizona Diamondbacks logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/ari.png" alt="Arizona Diamondbacks"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">LAD ML <span class="opponent-text">@ ARI</span></span>
+                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock">HR</span>Hard Rock · public fade · 1:35p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">-118</td>
+                  <td class="positive">58.9%</td>
+                  <td>54.1%</td>
+                  <td class="positive">+4.8%</td>
+                  <td>-129</td>
+                  <td>$25</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button approve-soft">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="needs-refresh">
+                  <td><span class="rank">05</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="New York Yankees logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png" alt="New York Yankees"></span>
+                        <span class="team-mark opponent" aria-label="Cleveland Guardians logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/cle.png" alt="Cleveland Guardians"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">NYY -1.5 <span class="opponent-text">vs CLE</span></span>
+                        <span class="book book-line"><span class="book-glyph mgm" aria-label="BetMGM">M</span>BetMGM · below stake cap · 1:22p</span>
+                        <span class="state-note warn">Needs price refresh before approval</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">+132</td>
+                  <td class="positive">44.7%</td>
+                  <td>43.1%</td>
+                  <td class="positive">+1.6%</td>
+                  <td>+126</td>
+                  <td>$10</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button inactive" disabled>Refresh</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="rank">06</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="Philadelphia Phillies logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" alt="Philadelphia Phillies"></span>
+                        <span class="team-mark opponent" aria-label="New York Mets logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/nym.png" alt="New York Mets"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">PHI ML <span class="opponent-text">vs NYM</span></span>
+                        <span class="book book-line"><span class="book-glyph dk" aria-label="DraftKings">DK</span>DraftKings · starter confirmed · 1:18p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">-112</td>
+                  <td class="positive">56.4%</td>
+                  <td>52.8%</td>
+                  <td class="positive">+3.6%</td>
+                  <td>-121</td>
+                  <td>$20</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button approve-soft">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="rank">07</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="Houston Astros logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/hou.png" alt="Houston Astros"></span>
+                        <span class="team-mark opponent" aria-label="Oakland Athletics logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/oak.png" alt="Oakland Athletics"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">HOU +1.5 <span class="opponent-text">@ OAK</span></span>
+                        <span class="book book-line"><span class="book-glyph fd" aria-label="FanDuel">FD</span>FanDuel · road split edge · 1:09p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">-135</td>
+                  <td class="positive">61.1%</td>
+                  <td>57.4%</td>
+                  <td class="positive">+3.7%</td>
+                  <td>-144</td>
+                  <td>$20</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button approve-soft">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="rank">08</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="St. Louis Cardinals logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/stl.png" alt="St. Louis Cardinals"></span>
+                        <span class="team-mark opponent" aria-label="Milwaukee Brewers logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/mil.png" alt="Milwaukee Brewers"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">STL ML <span class="opponent-text">@ MIL</span></span>
+                        <span class="book book-line"><span class="book-glyph cz" aria-label="Caesars">CZ</span>Caesars · bullpen rest · 12:58p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">+108</td>
+                  <td class="positive">52.4%</td>
+                  <td>48.1%</td>
+                  <td class="positive">+4.3%</td>
+                  <td>-101</td>
+                  <td>$15</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button approve-soft">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="blocked-row">
+                  <td><span class="rank">09</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="Kansas City Royals logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/kc.png" alt="Kansas City Royals"></span>
+                        <span class="team-mark opponent" aria-label="Chicago White Sox logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/cws.png" alt="Chicago White Sox"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">KC -1.5 <span class="opponent-text">vs CWS</span></span>
+                        <span class="book book-line"><span class="book-glyph b365" aria-label="bet365">365</span>bet365 · steam held · 12:44p</span>
+                        <span class="state-note bad">Blocked: rank outside automation gate</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">+146</td>
+                  <td class="positive">42.1%</td>
+                  <td>40.7%</td>
+                  <td class="positive">+1.4%</td>
+                  <td>+139</td>
+                  <td>$10</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button inactive" disabled>Blocked</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="rank">10</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="San Diego Padres logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/sd.png" alt="San Diego Padres"></span>
+                        <span class="team-mark opponent" aria-label="San Francisco Giants logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/sf.png" alt="San Francisco Giants"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">SD ML <span class="opponent-text">@ SF</span></span>
+                        <span class="book book-line"><span class="book-glyph nv" aria-label="Novig">N</span>Novig · no-vig price · 12:37p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">+102</td>
+                  <td class="positive">52.8%</td>
+                  <td>49.5%</td>
+                  <td class="positive">+3.3%</td>
+                  <td>-104</td>
+                  <td>$15</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button approve-soft">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="rank">11</span></td>
+                  <td>
+                    <div class="market-cell">
+                      <div class="matchup-marks">
+                        <span class="team-mark" aria-label="Atlanta Braves logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" alt="Atlanta Braves"></span>
+                        <span class="team-mark opponent" aria-label="Miami Marlins logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/mia.png" alt="Miami Marlins"></span>
+                      </div>
+                      <div class="market-copy">
+                        <span class="market">ATL -1.5 <span class="opponent-text">@ MIA</span></span>
+                        <span class="book book-line"><span class="book-glyph px" aria-label="ProphetX">PX</span>ProphetX · exchange fill · 12:31p</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="odds">+118</td>
+                  <td class="positive">47.6%</td>
+                  <td>45.9%</td>
+                  <td class="positive">+1.7%</td>
+                  <td>+112</td>
+                  <td>$15</td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="button approve-soft">Approve</button>
+                      <button class="button">Hold</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -795,15 +1661,33 @@
                   <text class="chart-label" x="18" y="24">Cumulative P/L</text>
                   <text class="chart-label" x="18" y="174">7 days</text>
                   <text class="chart-label" x="675" y="24">+$216</text>
+                  <path class="profit-area" d="M20 132 L122 126 L224 136 L326 110 L428 116 L530 82 L740 68 L740 190 L20 190 Z" fill="#dfeee5"/>
                   <path class="trace-secondary" d="M20 132 L122 126 L224 136 L326 110 L428 116 L530 82 L740 68" fill="none" stroke="#d8d0c3" stroke-width="8" opacity="0.7"/>
-                  <path class="trace-primary" d="M20 132 L122 126 L224 136 L326 110 L428 116 L530 82 L740 68" fill="none" stroke="#4e5a61" stroke-width="3"/>
+                  <path class="trace-primary" d="M20 132 L122 126 L224 136 L326 110 L428 116 L530 82 L740 68" fill="none" stroke="#1f7a4d" stroke-width="3"/>
                   <circle class="trace-point" cx="740" cy="68" r="5" fill="#1f7a4d"/>
                 </svg>
               </div>
-              <div class="metric">
-                <div class="label">Settled Bets</div>
-                <div class="metric-value">42</div>
-                <p class="small-copy">25-17 this week</p>
+              <div class="profit-stack">
+                <div class="profit-card primary-stat">
+                  <div class="label">Profit</div>
+                  <div class="profit-value" data-count-to="216">$0</div>
+                  <p class="small-copy">+3.6% ROI this week</p>
+                </div>
+                <div class="profit-split">
+                  <div class="mini-stat">
+                    <div class="label">Won</div>
+                    <strong class="positive">+$421</strong>
+                  </div>
+                  <div class="mini-stat loss">
+                    <div class="label">Lost</div>
+                    <strong>-$205</strong>
+                  </div>
+                </div>
+                <div class="profit-card">
+                  <div class="label">Settled Bets</div>
+                  <div class="metric-value">42</div>
+                  <p class="small-copy">25-17 this week</p>
+                </div>
               </div>
             </div>
             <table class="history-table">
@@ -846,8 +1730,8 @@
 
       <aside class="panel drawer" aria-label="Decision details">
         <div class="panel-head">
-          <h2>Decision packet</h2>
-          <span class="badge positive">Valid</span>
+          <h2>Ticket inspector</h2>
+          <span class="badge positive">Executable</span>
         </div>
         <div class="drawer-body">
           <section class="decision">
@@ -872,17 +1756,67 @@
             </div>
           </section>
 
+          <table class="inspection-table" aria-label="Selected ticket guardrails">
+            <tbody>
+              <tr>
+                <th>Book</th>
+                <td>Hard Rock</td>
+              </tr>
+              <tr>
+                <th>Max price</th>
+                <td>-151</td>
+              </tr>
+              <tr>
+                <th>Price age</th>
+                <td>42s</td>
+              </tr>
+              <tr>
+                <th>Exposure after approve</th>
+                <td>$397</td>
+              </tr>
+              <tr>
+                <th>Route state</th>
+                <td data-inspector-state>Illinois</td>
+              </tr>
+              <tr>
+                <th>Deeplink target</th>
+                <td data-deeplink-target>Hard Rock IL</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <section class="line-movement" aria-label="Selected ticket line movement">
+            <div class="line-labels">
+              <span>Open -136</span>
+              <span>Now -142</span>
+              <span>Ceiling -151</span>
+            </div>
+            <svg viewBox="0 0 320 72" preserveAspectRatio="none" aria-hidden="true">
+              <line class="axis" x1="0" y1="52" x2="320" y2="52"></line>
+              <line class="acceptable" x1="0" y1="22" x2="320" y2="22"></line>
+              <path class="line" d="M4 44 C42 42 68 49 102 38 S166 33 202 35 S258 26 316 29"></path>
+            </svg>
+            <div class="line-labels">
+              <span>Still inside guardrail</span>
+              <span class="positive">+9c cushion</span>
+            </div>
+          </section>
+
           <section class="notes">
             <div>
-              <div class="label">Rationale</div>
+              <div class="label">Qualification</div>
             </div>
             <div class="note">
-              <h3>Qualifies under RL Meta</h3>
+              <h3>Clears current guardrail</h3>
               <p>Confidence above 60%, rank inside top half of slate, and lineup status is locked.</p>
             </div>
             <div class="note">
-              <h3>Odds state</h3>
-              <p>Fresh odds are degraded globally, but this executable line is still inside the stored guardrail.</p>
+              <h3>Refresh state</h3>
+              <p>Price is 42 seconds old and still better than the maximum acceptable price.</p>
+            </div>
+            <div class="note">
+              <h3>Location routing</h3>
+              <p data-route-note>Illinois route keeps the deeplink on the in-state Hard Rock book and hides books not executable there.</p>
             </div>
           </section>
 
@@ -908,5 +1842,73 @@
       </section>
     </section>
   </main>
+  <script>
+    const historySection = document.querySelector(".history");
+    const profitValue = document.querySelector("[data-count-to]");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const statePicker = document.querySelector("[data-state-picker]");
+    const routeState = document.querySelector("[data-route-state]");
+    const inspectorState = document.querySelector("[data-inspector-state]");
+    const deeplinkTarget = document.querySelector("[data-deeplink-target]");
+    const routeNote = document.querySelector("[data-route-note]");
+
+    const routeMap = {
+      IL: {
+        state: "Illinois",
+        target: "Hard Rock IL",
+        note: "Illinois route keeps the deeplink on the in-state Hard Rock book and hides books not executable there."
+      },
+      IA: {
+        state: "Iowa",
+        target: "Hard Rock IA",
+        note: "Iowa route will swap the deeplink to the Iowa book app when the same executable price is available there."
+      }
+    };
+
+    function animateProfit() {
+      if (!profitValue || profitValue.dataset.done) return;
+      profitValue.dataset.done = "true";
+      const target = Number(profitValue.dataset.countTo);
+
+      if (reduceMotion.matches) {
+        profitValue.textContent = `+$${target}`;
+        return;
+      }
+
+      const start = performance.now();
+      const duration = 900;
+
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        profitValue.textContent = `+$${Math.round(target * eased)}`;
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    if (historySection) {
+      const observer = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        historySection.classList.add("in-view");
+        animateProfit();
+        observer.disconnect();
+      }, { threshold: 0.35 });
+
+      observer.observe(historySection);
+    }
+
+    if (statePicker) {
+      statePicker.addEventListener("change", () => {
+        const route = routeMap[statePicker.value];
+        if (!route) return;
+        if (routeState) routeState.textContent = route.state;
+        if (inspectorState) inspectorState.textContent = route.state;
+        if (deeplinkTarget) deeplinkTarget.textContent = route.target;
+        if (routeNote) routeNote.textContent = route.note;
+      });
+    }
+  </script>
 </body>
 </html>
