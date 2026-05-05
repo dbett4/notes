@@ -24,7 +24,7 @@ Current design language:
 - Warm surface cards: `#FFFAF0` / `#FFFDF7`
 - Graphite signal accent: `#3F3A34`
 - Muted slate for line movement / links / active navigation: `#4E5A61`
-- Olive / green / red only for real semantic values, not brand decoration
+- Olive / green may be used for analytical signal, state, and restrained product accents when it is clearly not LSL teal/green
 - Compact, precise, Vercel-like rhythm
 - Stripe-like typographic polish
 - shadcn-style component restraint
@@ -39,9 +39,33 @@ Non-negotiables:
 - No glowing blobs/orbs.
 - No oversized generic SaaS cards.
 - No hero layout for the actual app workflow.
-- No green as brand accent.
+- Green may be used if it is clearly not LSL teal/green.
 
 ## Source References To Carry Forward
+
+### Local General Design Reference Pack
+
+Source:
+
+- `/Users/davebettner/Documents/Codex/design-reference-pack`
+
+Use for:
+
+- Source-pack workflow.
+- 3-layer context: functional, visual, and data/content.
+- UI state coverage: empty, loading/running, success, warning/degraded, error/recovery, and blocked actions.
+- Reference roles by job: Jakub Krehel for micro-polish, KirkMDesign for critique/edit/screenshot workflow, Motion Core for state-change motion, Watermelon UI for component/block structure, MDN `scrollbar-gutter` for stable scroll panes.
+
+Apply to `d + bet` as:
+
+- Local brand rules in `DESIGN.md` override every outside reference.
+- Borrow workflow and quality checks, not palettes or startup/SaaS visual personality.
+- Before design edits, state the 3-layer context briefly, then make scoped changes and render desktop/mobile.
+
+Do not use for:
+
+- Replacing the paper/ink/graphite identity.
+- Introducing generic centered SaaS heroes, glowing visuals, or copied reference palettes.
 
 ### Peter Yang / Ravi Mehta 3-Layer Context
 
@@ -230,7 +254,7 @@ Apply to `d + bet` as:
 Do not use for:
 
 - Inventing a new palette.
-- Introducing teal, neon, saturated green, or one-note accent systems.
+- Introducing teal, LSL green, neon sportsbook green, or one-note accent systems.
 
 ### React Bits / Vue Bits / Svelte Bits
 
@@ -373,7 +397,7 @@ Current direction to preserve:
 - `color-muted` #79736A
 - `color-signal` #3F3A34
 - `color-slate` #4E5A61
-- semantic green/red only for real values and states
+- non-LSL green for analytical signal, real values, states, and restrained product accents
 - Geist / Satoshi-like typography
 - compact 4px/6px/10px/12px/24px rhythm
 - 4px buttons, 6px cards/panels, 8px overlays
@@ -412,6 +436,6 @@ Constraints:
 - No purple-blue gradients, glowing orbs, or decorative AI visuals.
 - No oversized marketing hero for the actual app.
 - No generic SaaS block dump.
-- No green as brand accent.
+- Green may be used if it is clearly not LSL teal/green.
 - Do not animate keyboard-heavy workflows or critical number changes.
 ```

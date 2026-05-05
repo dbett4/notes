@@ -28,12 +28,15 @@
     * { box-sizing: border-box; }
 
     html {
-      scrollbar-gutter: stable;
+      scrollbar-gutter: stable both-edges;
     }
 
     body {
       margin: 0;
-      background: var(--paper);
+      background:
+        linear-gradient(90deg, rgba(216, 208, 195, 0.18) 1px, transparent 1px) 0 0 / 72px 72px,
+        linear-gradient(180deg, rgba(216, 208, 195, 0.14) 1px, transparent 1px) 0 0 / 72px 72px,
+        var(--paper);
       color: var(--ink);
       font-family: Geist, "Geist Sans", Satoshi, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-feature-settings: "liga", "ss05", "tnum";
@@ -45,23 +48,23 @@
       width: min(1520px, calc(100vw - 28px));
       min-height: 100vh;
       margin: 0 auto;
-      padding: 18px 0 34px;
+      padding: 8px 0 34px;
     }
 
     .topbar {
       display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 18px;
+      grid-template-columns: auto auto 1fr;
+      gap: 10px;
       align-items: center;
-      padding: 0 0 16px;
+      padding: 0 0 8px;
       border-bottom: 1px solid var(--line-strong);
     }
 
     .brand {
       display: flex;
       align-items: baseline;
-      gap: 9px;
-      font-size: 28px;
+      gap: 7px;
+      font-size: 22px;
       line-height: 1;
       font-weight: 760;
       letter-spacing: -0.015em;
@@ -75,6 +78,12 @@
       flex-wrap: wrap;
       gap: 8px;
       justify-content: start;
+    }
+
+    .topbar .pill {
+      min-height: 24px;
+      padding: 0 8px;
+      font-size: 12px;
     }
 
     .pill {
@@ -105,14 +114,28 @@
     }
 
     .ready .dot { background: var(--success); }
+    .running .dot { background: var(--slate); }
     .degraded .dot { background: var(--warning); }
     .blocked .dot { background: var(--error); }
+    .empty .dot { background: var(--signal); }
 
     .toolbar {
       display: flex;
       gap: 10px;
       align-items: center;
       justify-content: end;
+    }
+
+    .session-note {
+      display: inline-flex;
+      align-items: center;
+      justify-content: end;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
     }
 
     .button {
@@ -129,10 +152,23 @@
       transition: transform 120ms var(--ease-out), background 160ms ease, border-color 160ms ease;
     }
 
+    .button:active,
+    .segment:active,
+    .coverage-chip:active,
+    .queue-table .row-actions button:active {
+      transform: scale(0.97);
+    }
+
     .button:hover { background: var(--surface-2); }
     .button:active { transform: scale(0.97); }
     .button:focus-visible { outline: 2px solid var(--slate); outline-offset: 2px; }
     .button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .button.opened {
+      border-color: rgba(31, 122, 77, 0.32);
+      background: var(--positive-surface);
+      color: var(--success);
+    }
+
     .button.betslip-live {
       position: relative;
       padding-left: 30px;
@@ -300,11 +336,10 @@
       gap: 4px;
     }
 
-    .decision-strip {
+    .best-bets-strip {
       display: grid;
-      grid-template-columns: 1fr auto auto auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
-      align-items: center;
       padding: 10px 12px;
       border-bottom: 1px solid var(--line);
       background:
@@ -312,32 +347,315 @@
         rgba(255, 253, 247, 0.44);
     }
 
-    .decision-strip strong {
+    .slip-batches {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(90deg, rgba(63, 58, 52, 0.055), transparent 62%),
+        rgba(255, 253, 247, 0.44);
+    }
+
+    .slip-batch {
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .slip-batch.primary-batch {
+      border-color: rgba(31, 122, 77, 0.24);
+      background: linear-gradient(180deg, rgba(223, 238, 229, 0.5), rgba(255, 255, 255, 0.44));
+    }
+
+    .slip-batch-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .slip-batch-title {
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 700;
+    }
+
+    .slip-batch-count {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 15px;
+    }
+
+    .slip-batch-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .slip-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 24px;
+      padding: 0 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 253, 247, 0.82);
+      color: var(--ink);
+      font-size: 11px;
+      line-height: 15px;
+      white-space: nowrap;
+    }
+
+    .slip-batch-meta {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 15px;
+    }
+
+    .best-bet-card {
+      display: grid;
+      gap: 3px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .best-bet-card.top-grade {
+      border-color: rgba(31, 122, 77, 0.24);
+      background: linear-gradient(180deg, rgba(223, 238, 229, 0.5), rgba(255, 255, 255, 0.44));
+    }
+
+    .best-bet-card .eyebrow {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 650;
+    }
+
+    .best-bet-card strong {
       color: var(--ink);
       font-weight: 720;
       font-variant-numeric: tabular-nums;
     }
 
-    .decision-strip span {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 16px;
+    .best-bet-title {
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 700;
     }
 
-    .decision-strip .primary-signal {
-      color: var(--ink);
-      font-size: 13px;
-      font-weight: 620;
+    .best-bet-meta {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 15px;
+    }
+
+    .best-bet-grade {
+      color: var(--success);
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 650;
     }
 
     .queue-controls {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: auto 1fr;
       gap: 10px;
       align-items: center;
       padding: 8px 12px;
       border-bottom: 1px solid var(--line);
       background: rgba(255, 253, 247, 0.44);
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.42);
+    }
+
+    .queue-label {
+      min-height: 29px;
+      display: inline-flex;
+      align-items: center;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 18px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .board-menu {
+      position: relative;
+      justify-self: end;
+    }
+
+    .board-menu summary {
+      min-height: 29px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 8px;
+      background: rgba(255, 255, 255, 0.34);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 620;
+      list-style: none;
+      transition: transform 120ms var(--ease-out), background 160ms ease, border-color 160ms ease;
+    }
+
+    .board-menu summary::-webkit-details-marker { display: none; }
+    .board-menu summary:active { transform: scale(0.97); }
+
+    .board-menu-content {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      z-index: 20;
+      width: 260px;
+      display: grid;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 253, 247, 0.98);
+      box-shadow: 0 10px 24px rgba(23, 23, 23, 0.12);
+    }
+
+    .board-menu-content label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .board-menu-content p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .freshness-indicator {
+      width: 24px;
+      height: 24px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(31, 122, 77, 0.24);
+      border-radius: 50%;
+      background: rgba(31, 122, 77, 0.07);
+    }
+
+    .freshness-indicator::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(31, 122, 77, 0.12);
+    }
+
+    .session-note .freshness-indicator {
+      width: 16px;
+      height: 16px;
+      border-color: rgba(31, 122, 77, 0.2);
+      background: rgba(31, 122, 77, 0.06);
+    }
+
+    .session-note .freshness-indicator::before {
+      width: 6px;
+      height: 6px;
+      box-shadow: 0 0 0 3px rgba(31, 122, 77, 0.1);
+    }
+
+    .market-ticker {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: stretch;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 247, 0.42);
+      overflow: hidden;
+    }
+
+    .ticker-label {
+      display: grid;
+      place-items: center;
+      padding: 0 14px;
+      border-right: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 16px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .ticker-items {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(178px, 1fr);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .ticker-items::-webkit-scrollbar { display: none; }
+
+    .ticker-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      min-height: 58px;
+      padding: 8px 12px;
+      border-right: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+
+    .ticker-teams {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .ticker-team {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .ticker-team span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ticker-odds {
+      color: var(--muted);
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ticker-edge {
+      align-self: center;
+      padding: 2px 6px;
+      border: 1px solid rgba(31, 122, 77, 0.22);
+      border-radius: 4px;
+      background: rgba(31, 122, 77, 0.055);
+      color: var(--success);
+      font-weight: 720;
+      font-variant-numeric: tabular-nums;
     }
 
     .book-coverage {
@@ -370,6 +688,16 @@
       transform: translateY(-1px);
       border-color: var(--line-strong);
       background: rgba(255, 255, 255, 0.52);
+    }
+
+    .coverage-chip[data-status="stale"] {
+      border-color: rgba(111, 91, 62, 0.34);
+      background: rgba(111, 91, 62, 0.075);
+    }
+
+    .coverage-chip[data-status="blocked"] {
+      border-color: rgba(178, 58, 51, 0.28);
+      background: rgba(178, 58, 51, 0.055);
     }
 
     .coverage-chip strong {
@@ -416,7 +744,7 @@
 
     .refresh-strip {
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: auto 1fr;
       gap: 8px;
       align-items: center;
       padding: 7px 12px;
@@ -425,6 +753,11 @@
       color: var(--muted);
       font-size: 12px;
       line-height: 16px;
+    }
+
+    .refresh-copy strong {
+      color: var(--ink);
+      font-weight: 680;
     }
 
     .refresh-meter {
@@ -526,8 +859,57 @@
     .queue-meta {
       display: flex;
       flex-wrap: wrap;
-      justify-content: end;
+      justify-content: start;
       gap: 7px;
+    }
+
+    .workbench-toolbar {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 247, 0.34);
+    }
+
+    .search-field {
+      min-height: 32px;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 10px;
+      background: rgba(255, 255, 255, 0.42);
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .search-field::placeholder {
+      color: var(--muted);
+    }
+
+    .toolbar-chip {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 10px;
+      background: rgba(255, 255, 255, 0.34);
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 620;
+      white-space: nowrap;
+      transition: transform 120ms var(--ease-out), background 160ms ease, border-color 160ms ease;
+    }
+
+    .toolbar-chip:active {
+      transform: scale(0.97);
     }
 
     .meta-chip {
@@ -553,7 +935,8 @@
 
     .queue-table-wrap {
       overflow-x: auto;
-      scrollbar-gutter: stable;
+      scrollbar-gutter: stable both-edges;
+      overscroll-behavior-x: contain;
     }
 
     .queue-table {
@@ -584,37 +967,32 @@
       white-space: nowrap;
     }
 
-    .queue-table th:first-child,
     .queue-table td:first-child {
-      width: 38px;
-      text-align: center;
-      color: var(--muted);
+      display: none;
     }
 
-    .queue-table th:nth-child(2),
+    .queue-table th:first-child,
     .queue-table td:nth-child(2) {
-      width: 34%;
+      width: 40%;
       text-align: left;
     }
 
-    .queue-table th:nth-child(3),
+    .queue-table th:nth-child(2),
     .queue-table td:nth-child(3),
-    .queue-table th:nth-child(4),
+    .queue-table th:nth-child(3),
     .queue-table td:nth-child(4),
-    .queue-table th:nth-child(5),
+    .queue-table th:nth-child(4),
     .queue-table td:nth-child(5),
-    .queue-table th:nth-child(6),
+    .queue-table th:nth-child(5),
     .queue-table td:nth-child(6),
-    .queue-table th:nth-child(7),
-    .queue-table td:nth-child(7),
-    .queue-table th:nth-child(8),
-    .queue-table td:nth-child(8) {
+    .queue-table th:nth-child(6),
+    .queue-table td:nth-child(7) {
       width: 8%;
     }
 
     .queue-table th:last-child,
     .queue-table td:last-child {
-      width: 116px;
+      display: none;
     }
 
     .queue-table tbody tr {
@@ -635,12 +1013,21 @@
     .queue-table tbody tr:nth-child(11) { animation-delay: 88ms; }
 
     .queue-table tbody tr.selected {
+      position: relative;
       background: rgba(63, 58, 52, 0.055);
-      box-shadow: inset 3px 0 0 var(--signal);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
     }
 
     .queue-table tbody tr.needs-refresh {
       background: rgba(111, 91, 62, 0.045);
+    }
+
+    .queue-table tbody tr[data-action-state="approved"] {
+      background: rgba(31, 122, 77, 0.075);
+    }
+
+    .queue-table tbody tr[data-action-state="held"] {
+      opacity: 0.62;
     }
 
     .queue-table tbody tr.blocked-row {
@@ -648,14 +1035,10 @@
       opacity: 0.88;
     }
 
-    .queue-table tbody tr:hover {
-      background: rgba(255, 253, 247, 0.74);
-    }
-
     .market-cell {
       display: grid;
-      grid-template-columns: 40px minmax(0, 1fr);
-      gap: 7px;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 9px;
       align-items: center;
       min-width: 150px;
       text-align: left;
@@ -669,14 +1052,18 @@
     }
 
     .matchup-marks {
-      display: flex;
-      align-items: center;
+      position: relative;
       width: 40px;
+      height: 32px;
     }
 
     .team-mark {
-      width: 27px;
-      height: 27px;
+      position: absolute;
+      left: 0;
+      top: 1px;
+      z-index: 2;
+      width: 28px;
+      height: 28px;
       display: grid;
       place-items: center;
       border: 1px solid var(--line);
@@ -691,23 +1078,25 @@
     }
 
     .team-mark.opponent {
-      width: 21px;
-      height: 21px;
-      margin-left: -8px;
+      left: 18px;
+      top: 6px;
+      z-index: 1;
+      width: 24px;
+      height: 24px;
       background: var(--paper);
-      opacity: 0.82;
+      opacity: 0.94;
     }
 
     .team-mark img {
-      width: 22px;
-      height: 22px;
+      width: 23px;
+      height: 23px;
       display: block;
       object-fit: contain;
     }
 
     .team-mark.opponent img {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
     }
 
     .market-copy {
@@ -718,14 +1107,15 @@
     }
 
     .market {
-      font-size: 13px;
+      font-size: 15px;
       line-height: 18px;
-      font-weight: 680;
+      font-weight: 760;
     }
 
     .opponent-text {
       color: var(--muted);
-      font-weight: 520;
+      font-size: 12px;
+      font-weight: 560;
     }
 
     .book {
@@ -743,18 +1133,27 @@
     }
 
     .book-glyph {
-      width: 14px;
-      height: 14px;
+      width: 17px;
+      height: 17px;
       display: inline-grid;
       place-items: center;
-      border: 1px solid var(--line-strong);
+      border: 1px solid var(--line);
       border-radius: 3px;
-      background: rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.62);
       color: var(--signal);
       font-size: 9px;
       line-height: 1;
       font-weight: 780;
       letter-spacing: 0;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .book-glyph img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
     }
 
     .book-glyph.hr { color: #1b6b48; }
@@ -821,6 +1220,10 @@
       font-size: 12px;
     }
 
+    .queue-table .row-actions .button:not(.primary):not(.approve-soft) {
+      display: none;
+    }
+
     .badge {
       display: inline-flex;
       min-height: 24px;
@@ -858,7 +1261,7 @@
     }
 
     .decision {
-      padding: 12px;
+      padding: 10px;
       border: 1px solid rgba(63, 58, 52, 0.24);
       border-radius: 4px;
       background: rgba(63, 58, 52, 0.045);
@@ -872,20 +1275,16 @@
       line-height: 22px;
     }
 
-    .plus-mark {
-      width: 22px;
-      height: 22px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--signal);
-      color: var(--signal);
-      font-weight: 760;
-      line-height: 1;
+    .pick-context {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
     }
 
     .math-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 7px;
       margin-top: 10px;
     }
@@ -899,8 +1298,8 @@
 
     .math-cell .metric-value {
       margin-top: 4px;
-      font-size: 26px;
-      line-height: 31px;
+      font-size: 21px;
+      line-height: 26px;
     }
 
     .inspection-table {
@@ -950,6 +1349,11 @@
       background: rgba(255, 253, 247, 0.52);
     }
 
+    .line-movement.favorable {
+      border-color: rgba(31, 122, 77, 0.25);
+      background: linear-gradient(180deg, rgba(223, 238, 229, 0.52), rgba(255, 253, 247, 0.62));
+    }
+
     .line-movement svg {
       width: 100%;
       height: 72px;
@@ -969,11 +1373,30 @@
       stroke-linejoin: round;
     }
 
+    .line-movement.favorable .line {
+      stroke: var(--success);
+    }
+
     .line-movement .acceptable {
       stroke: var(--signal);
       stroke-width: 1;
       stroke-dasharray: 4 4;
       opacity: 0.7;
+    }
+
+    .line-movement.favorable .acceptable {
+      stroke: var(--success);
+      opacity: 0.5;
+    }
+
+    .line-status {
+      margin-top: 6px;
+      display: inline-flex;
+      align-items: center;
+      color: var(--success);
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 650;
     }
 
     .line-labels {
@@ -1160,9 +1583,70 @@
 
     .support-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 8px;
       padding: 10px;
+    }
+
+    .state-card {
+      min-height: 112px;
+      display: grid;
+      align-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 253, 247, 0.54);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52);
+      transition: transform 160ms var(--ease-out), border-color 160ms ease, background 160ms ease;
+    }
+
+    .state-card header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .state-card h3 {
+      font-size: 13px;
+      line-height: 18px;
+      font-weight: 720;
+    }
+
+    .state-card p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .state-card code {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 14px;
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .state-card.ready { border-left-color: rgba(31, 122, 77, 0.62); }
+    .state-card.running { border-left-color: rgba(78, 90, 97, 0.62); }
+    .state-card.degraded { border-left-color: rgba(111, 91, 62, 0.62); }
+    .state-card.blocked { border-left-color: rgba(178, 58, 51, 0.46); }
+    .state-card.empty { border-left-color: rgba(63, 58, 52, 0.44); }
+
+    .state-card.running .dot {
+      animation: live-pulse 1.7s var(--ease-out) infinite;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .queue-table tbody tr:hover {
+        background: rgba(255, 253, 247, 0.74);
+      }
+
+      .state-card:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 253, 247, 0.76);
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1192,25 +1676,222 @@
 
     @media (max-width: 1180px) {
       .layout { grid-template-columns: 1fr; }
+      .main { display: contents; }
+      .queue-panel { order: 1; }
+      .drawer { order: 2; }
+      .history-panel { order: 3; }
       .drawer { grid-column: 1; }
       .support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 760px) {
-      .app { width: min(100vw - 20px, 720px); padding-top: 14px; }
-      .topbar, .history-top { grid-template-columns: 1fr; }
+      .app { width: min(100vw - 20px, 720px); padding-top: 8px; }
+      .topbar { grid-template-columns: auto auto 1fr; gap: 8px; }
+      .history-top { grid-template-columns: 1fr; }
+      .brand { font-size: 20px; }
       .status-rail, .toolbar { justify-content: start; }
+      .session-note { justify-content: end; }
+      .market-ticker {
+        grid-template-columns: 1fr;
+      }
+      .ticker-label {
+        min-height: 28px;
+        justify-content: start;
+        place-items: center start;
+        border-right: 0;
+      }
       .section-head { display: grid; align-items: start; }
       .section-head .badge { justify-self: start; }
       .queue-controls { grid-template-columns: 1fr; }
+      .workbench-toolbar {
+        grid-template-columns: 1fr auto;
+      }
+      .workbench-toolbar .toolbar-chip:last-child {
+        display: none;
+      }
       .refresh-strip { grid-template-columns: auto 1fr; }
       .refresh-action { display: none; }
       .pull-refresh { display: flex; }
       .route-context { grid-template-columns: 1fr; }
       .state-picker { width: 100%; }
       .queue-meta { justify-content: start; }
-      .decision-strip { grid-template-columns: 1fr 1fr; }
+      .slip-batches { grid-template-columns: 1fr; }
+      .slip-batch { gap: 8px; }
+      .slip-batch-head { align-items: start; }
+      .slip-batch-count { text-align: right; }
+      .queue-table-wrap {
+        overflow-x: visible;
+        scrollbar-gutter: auto;
+      }
+      .queue-table {
+        min-width: 0;
+        table-layout: fixed;
+      }
+      .queue-table th,
+      .queue-table td {
+        padding: 8px 7px;
+      }
+      .queue-table th:nth-child(3),
+      .queue-table th:nth-child(4),
+      .queue-table th:nth-child(6),
+      .queue-table th:nth-child(7),
+      .queue-table td:nth-child(4),
+      .queue-table td:nth-child(5),
+      .queue-table td:nth-child(7),
+      .queue-table td:nth-child(8) {
+        display: none;
+      }
+      .queue-table th:first-child,
+      .queue-table td:nth-child(2) {
+        width: 62%;
+      }
+      .queue-table th:nth-child(2),
+      .queue-table td:nth-child(3) {
+        width: 18%;
+      }
+      .queue-table th:nth-child(5),
+      .queue-table td:nth-child(6) {
+        width: 20%;
+      }
+      .market-cell {
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 7px;
+        min-width: 0;
+      }
+      .matchup-marks {
+        width: 34px;
+        height: 29px;
+      }
+      .team-mark {
+        width: 25px;
+        height: 25px;
+      }
+      .team-mark.opponent {
+        left: 15px;
+        width: 22px;
+        height: 22px;
+      }
+      .team-mark img {
+        width: 20px;
+        height: 20px;
+      }
+      .team-mark.opponent img {
+        width: 16px;
+        height: 16px;
+      }
+      .market {
+        font-size: 14px;
+        line-height: 17px;
+      }
+      .book {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .math-grid, .support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      body { overflow-x: hidden; }
+      .app {
+        width: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      .topbar {
+        grid-template-columns: auto 1fr;
+      }
+      .status-rail {
+        min-width: 0;
+      }
+      .session-note {
+        display: none;
+      }
+      .queue-controls,
+      .queue-meta,
+      .slip-batch,
+      .slip-batch-head {
+        min-width: 0;
+      }
+      .queue-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .workbench-toolbar {
+        grid-template-columns: 1fr;
+      }
+      .toolbar-chip {
+        width: 100%;
+      }
+      .meta-chip {
+        justify-content: center;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        gap: 3px;
+        padding: 0 6px;
+        font-size: 11px;
+      }
+      .meta-chip:nth-child(3) {
+        display: none;
+      }
+      .meta-chip:nth-child(2) {
+        font-size: 0;
+      }
+      .meta-chip:nth-child(2)::before {
+        content: "HR";
+        font-size: 11px;
+      }
+      .meta-chip:nth-child(2) strong {
+        font-size: 11px;
+      }
+      .board-menu summary {
+        width: 100%;
+        justify-content: center;
+      }
+      .slip-batch-count {
+        display: none;
+      }
+      .queue-table th:nth-child(5),
+      .queue-table td:nth-child(6) {
+        display: none;
+      }
+      .queue-table,
+      .queue-table tbody,
+      .queue-table tr {
+        display: block;
+        width: 100%;
+      }
+      .queue-table thead {
+        display: none;
+      }
+      .queue-table tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 54px;
+        gap: 8px;
+        align-items: center;
+        padding: 9px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      .queue-table th,
+      .queue-table td {
+        width: auto !important;
+        padding: 0;
+        border-bottom: 0;
+      }
+      .queue-table td:nth-child(2),
+      .queue-table td:nth-child(3) {
+        display: block;
+      }
+      .queue-table td:nth-child(3) {
+        text-align: right;
+        font-size: 14px;
+      }
+      .annotation-toolbar {
+        left: 18px;
+        right: auto;
+      }
     }
 
     @keyframes refresh-spin {
@@ -1233,104 +1914,252 @@
       0%, 62% { transform: translateX(-115%); }
       100% { transform: translateX(115%); }
     }
+
+    @keyframes live-pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(78, 90, 97, 0.12); }
+      50% { box-shadow: 0 0 0 6px rgba(78, 90, 97, 0); }
+    }
+
+    .annotation-toolbar {
+      position: fixed;
+      z-index: 50;
+      left: 18px;
+      bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 250, 240, 0.94);
+      box-shadow: 0 10px 28px rgba(23, 23, 23, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .annotation-toolbar button {
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 10px;
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 620;
+      transition: transform 120ms var(--ease-out), background 160ms ease, border-color 160ms ease;
+    }
+
+    .annotation-toolbar button[aria-pressed="true"] {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
+    }
+
+    .annotation-toolbar button:active,
+    .annotation-note button:active {
+      transform: scale(0.97);
+    }
+
+    .annotation-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      min-height: 100%;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    body.annotating .annotation-layer {
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+
+    .annotation-note {
+      position: absolute;
+      width: min(220px, calc(100vw - 28px));
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      background: rgba(255, 253, 247, 0.98);
+      box-shadow: 0 8px 22px rgba(23, 23, 23, 0.12);
+      overflow: hidden;
+      pointer-events: auto;
+    }
+
+    .annotation-note header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .annotation-note textarea {
+      width: 100%;
+      min-height: 74px;
+      resize: vertical;
+      border: 0;
+      outline: 0;
+      padding: 8px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .annotation-note button {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 11px;
+      line-height: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 70;
+      right: 18px;
+      bottom: 18px;
+      max-width: min(360px, calc(100vw - 36px));
+      padding: 10px 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      background: rgba(255, 253, 247, 0.96);
+      box-shadow: 0 12px 30px rgba(23, 23, 23, 0.14);
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 18px;
+      font-weight: 620;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms var(--ease-out);
+    }
+
+    .toast.active {
+      opacity: 1;
+      transform: none;
+    }
   </style>
 </head>
 <body>
+  <div class="annotation-toolbar" aria-label="Annotation controls">
+    <button type="button" data-annotation-toggle aria-pressed="false">Annotate</button>
+    <button type="button" data-annotation-clear>Clear</button>
+  </div>
+  <div class="annotation-layer" data-annotation-layer aria-label="Preview annotations"></div>
   <main class="app">
     <header class="topbar">
       <div class="brand" aria-label="d plus bet">
         <span>d</span><span>+</span><span>bet</span>
       </div>
       <div class="status-rail" aria-label="System status">
-        <span class="pill degraded"><span class="dot"></span>Fresh odds degraded</span>
-        <span class="pill ready"><span class="dot"></span>Lineups locked</span>
+        <span class="pill ready"><span class="dot"></span>9 ready picks</span>
       </div>
-      <div class="toolbar">
-        <button class="button">Import</button>
-        <button class="button primary betslip-live">Betslip 5</button>
-      </div>
+      <div class="session-note"><span class="freshness-indicator" aria-label="Prices fresh"></span>Updated <span data-last-updated>2:11p</span></div>
     </header>
+
+    <section class="market-ticker" aria-label="Live market board">
+      <div class="ticker-label">Market board</div>
+      <div class="ticker-items">
+        <article class="ticker-item">
+          <span class="dot"></span>
+          <div class="ticker-teams">
+            <div class="ticker-team"><span>SEA +1.5</span><span class="ticker-odds">-142</span></div>
+            <div class="ticker-team"><span>TEX</span><span class="ticker-odds">+118</span></div>
+          </div>
+          <span class="ticker-edge">+4.3%</span>
+        </article>
+        <article class="ticker-item">
+          <span class="dot"></span>
+          <div class="ticker-teams">
+            <div class="ticker-team"><span>BAL ML</span><span class="ticker-odds">+104</span></div>
+            <div class="ticker-team"><span>BOS</span><span class="ticker-odds">-121</span></div>
+          </div>
+          <span class="ticker-edge">+4.8%</span>
+        </article>
+        <article class="ticker-item">
+          <span class="dot"></span>
+          <div class="ticker-teams">
+            <div class="ticker-team"><span>CHC +1.5</span><span class="ticker-odds">-128</span></div>
+            <div class="ticker-team"><span>CIN</span><span class="ticker-odds">+112</span></div>
+          </div>
+          <span class="ticker-edge">+4.1%</span>
+        </article>
+        <article class="ticker-item">
+          <span class="dot"></span>
+          <div class="ticker-teams">
+            <div class="ticker-team"><span>LAD ML</span><span class="ticker-odds">-118</span></div>
+            <div class="ticker-team"><span>ARI</span><span class="ticker-odds">+101</span></div>
+          </div>
+          <span class="ticker-edge">+4.8%</span>
+        </article>
+      </div>
+    </section>
 
     <section class="layout">
       <section class="main" aria-label="Review queue">
         <section class="panel queue-panel">
-          <div class="section-head">
-            <div class="section-title">
-              <div class="board-kicker">MLB run-line model</div>
-              <h1>Executable board</h1>
-              <p class="small-copy">Executable model-qualified plays with a current book price inside the guardrail.</p>
-            </div>
-            <span class="badge blue">MLB · RL Meta</span>
-          </div>
-
           <div class="queue-controls" aria-label="Proposed bet controls">
-            <div class="segmented" aria-label="Bet queue filter">
-              <button class="segment" aria-pressed="true">Executable 11</button>
-              <button class="segment" aria-pressed="false">Needs refresh 3</button>
-              <button class="segment" aria-pressed="false">Audit 12</button>
-            </div>
+            <div class="queue-label">Ready picks</div>
             <div class="queue-meta" aria-label="Queue summary">
-              <span class="meta-chip">Visible <strong>11</strong></span>
-              <span class="meta-chip">If approved <strong>$225</strong></span>
-              <span class="meta-chip">Best edge <strong class="positive">+4.3%</strong></span>
+              <span class="meta-chip">Place <strong>$180</strong></span>
+              <span class="meta-chip">Hard Rock <strong>3</strong></span>
               <span class="meta-chip">Open exposure <strong>$467</strong></span>
-              <span class="meta-chip degraded"><span class="dot"></span>3 hidden stale lines</span>
+              <details class="board-menu">
+                <summary>Settings</summary>
+                <div class="board-menu-content">
+                  <label>
+                    <span>State</span>
+                    <select class="state-picker" aria-label="Current betting state" data-state-picker>
+                      <option value="IL" selected>Illinois</option>
+                      <option value="IA">Iowa soon</option>
+                    </select>
+                  </label>
+                  <p data-route-note>Illinois route keeps the deeplink on the in-state Hard Rock book and hides books not available there.</p>
+                </div>
+              </details>
             </div>
           </div>
 
-          <div class="decision-strip" aria-label="Current board decision summary">
-            <span class="primary-signal">Top executable: <strong>SEA +1.5</strong> at <strong>-142</strong></span>
-            <span>Edge <strong class="positive">+4.3%</strong></span>
-            <span>Approve ceiling <strong>-151</strong></span>
-            <span>Risk if approved <strong>$397</strong></span>
+          <div class="workbench-toolbar" aria-label="Queue filtering controls">
+            <input class="search-field" type="search" aria-label="Search ready picks" placeholder="Search market, book, team">
+            <button class="toolbar-chip" type="button">Filter</button>
+            <button class="toolbar-chip" type="button">Group by book</button>
           </div>
 
-          <div class="route-context" aria-label="Location routing">
-            <div class="route-copy">
-              <span class="pill ready"><span class="dot"></span>Routing from <strong data-route-state>Illinois</strong></span>
-              <span>Use state availability before opening a sportsbook deeplink.</span>
-            </div>
-            <label class="route-copy">
-              <span>State</span>
-              <select class="state-picker" aria-label="Current betting state" data-state-picker>
-                <option value="IL" selected>Illinois</option>
-                <option value="IA">Iowa soon</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="book-coverage" aria-label="Sportsbook coverage">
-            <span class="coverage-chip"><span class="book-glyph hr" aria-label="Hard Rock">HR</span>Hard Rock <strong>3</strong></span>
-            <span class="coverage-chip"><span class="book-glyph dk" aria-label="DraftKings">DK</span>DraftKings <strong>1</strong></span>
-            <span class="coverage-chip"><span class="book-glyph fd" aria-label="FanDuel">FD</span>FanDuel <strong>1</strong></span>
-            <span class="coverage-chip"><span class="book-glyph mgm" aria-label="BetMGM">M</span>BetMGM <strong>1</strong></span>
-            <span class="coverage-chip"><span class="book-glyph fn" aria-label="Fanatics">F</span>Fanatics <strong>1</strong></span>
-            <span class="coverage-chip"><span class="book-glyph cz" aria-label="Caesars">CZ</span>Caesars <strong>1</strong></span>
-            <span class="coverage-chip"><span class="book-glyph b365" aria-label="bet365">365</span>bet365 <strong>1</strong></span>
-            <span class="coverage-chip"><span class="book-glyph nv" aria-label="Novig">N</span>Novig <strong>1</strong></span>
-            <span class="coverage-chip"><span class="book-glyph px" aria-label="ProphetX">PX</span>ProphetX <strong>1</strong></span>
-          </div>
-
-          <div class="pull-refresh" aria-label="Pull to refresh">
-            <span class="refresh-meter" aria-hidden="true"></span>
-            <span>Pull to refresh odds, lineups, and executable prices</span>
-          </div>
-
-          <div class="refresh-strip" aria-label="Refresh status">
-            <span class="refresh-meter" aria-hidden="true"></span>
-            <div class="refresh-copy">
-              <span><strong>Last refresh</strong> 2:11p</span>
-              <span>Odds 42s old</span>
-              <span>Lineups locked</span>
-            </div>
-            <button class="refresh-action">Refresh now</button>
+          <div class="slip-batches" aria-label="Bulk bet slips">
+            <article class="slip-batch primary-batch" data-slip-url="https://hardrock.bet/betslip?selections=SEA-RL-142,BAL-ML-104,LAD-ML-118&stake=70">
+              <div class="slip-batch-head">
+                <div>
+                  <div class="eyebrow">Top Book</div>
+                  <div class="slip-batch-title">Hard Rock</div>
+                </div>
+                <div class="slip-batch-count">3 bets · $70 total</div>
+              </div>
+              <div class="slip-batch-list">
+                <span class="slip-pill">SEA +1.5 <strong>$25</strong></span>
+                <span class="slip-pill">BAL ML <strong>$20</strong></span>
+                <span class="slip-pill">LAD ML <strong>$25</strong></span>
+              </div>
+            </article>
           </div>
 
           <div class="queue-table-wrap">
             <table class="queue-table">
               <thead>
                 <tr>
-                  <th>#</th>
                   <th>Market</th>
                   <th>Odds</th>
                   <th>Model</th>
@@ -1342,7 +2171,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr class="selected">
+                <tr class="selected" data-slip-row data-book="Hard Rock" data-market="SEA +1.5" data-slip="SEA, BAL, LAD" data-stake="$70" data-target="Hard Rock IL" data-url="https://hardrock.bet/betslip?selections=SEA-RL-142,BAL-ML-104,LAD-ML-118&stake=70" data-updated-minutes="1">
                   <td><span class="rank">01</span></td>
                   <td>
                     <div class="market-cell">
@@ -1352,7 +2181,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">SEA +1.5 <span class="opponent-text">vs TEX</span></span>
-                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock">HR</span>Hard Rock · lineup locked · 2:11p</span>
+                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock"><img src="https://www.google.com/s2/favicons?domain=hardrock.bet&sz=64" alt=""></span>Hard Rock · lineup locked · 2:11p</span>
                       </div>
                     </div>
                   </td>
@@ -1364,12 +2193,12 @@
                   <td>$25</td>
                   <td>
                     <div class="row-actions">
-                      <button class="button primary">Approve</button>
-                      <button class="button">Hold</button>
+                      <button class="button primary" data-open-slip>Open slip</button>
+                      <button class="button" data-hold>Hold</button>
                     </div>
                   </td>
                 </tr>
-                <tr>
+                <tr data-slip-row data-book="Hard Rock" data-market="BAL ML" data-slip="BAL ML" data-stake="$20" data-target="Hard Rock IL" data-url="https://hardrock.bet/betslip?selection=BAL-ML-104&stake=20" data-updated-minutes="19">
                   <td><span class="rank">02</span></td>
                   <td>
                     <div class="market-cell">
@@ -1379,7 +2208,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">BAL ML <span class="opponent-text">vs BOS</span></span>
-                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock">HR</span>Hard Rock · pitcher edge · 1:52p</span>
+                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock"><img src="https://www.google.com/s2/favicons?domain=hardrock.bet&sz=64" alt=""></span>Hard Rock · pitcher edge · 1:52p</span>
                       </div>
                     </div>
                   </td>
@@ -1391,12 +2220,12 @@
                   <td>$20</td>
                   <td>
                     <div class="row-actions">
-                      <button class="button approve-soft">Approve</button>
-                      <button class="button">Hold</button>
+                      <button class="button approve-soft" data-open-slip>Open slip</button>
+                      <button class="button" data-hold>Hold</button>
                     </div>
                   </td>
                 </tr>
-                <tr>
+                <tr data-slip-row data-book="Fanatics" data-market="CHC +1.5" data-slip="CHC +1.5" data-stake="$25" data-target="Manual book search" data-url="" data-updated-minutes="24">
                   <td><span class="rank">03</span></td>
                   <td>
                     <div class="market-cell">
@@ -1406,7 +2235,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">CHC +1.5 <span class="opponent-text">@ CIN</span></span>
-                        <span class="book book-line"><span class="book-glyph fn" aria-label="Fanatics">F</span>Fanatics · weather checked · 1:47p</span>
+                        <span class="book book-line"><span class="book-glyph fn" aria-label="Fanatics"><img src="https://www.google.com/s2/favicons?domain=fanatics.com&sz=64" alt=""></span>Fanatics · weather checked · 1:47p</span>
                       </div>
                     </div>
                   </td>
@@ -1418,12 +2247,12 @@
                   <td>$25</td>
                   <td>
                     <div class="row-actions">
-                      <button class="button approve-soft">Approve</button>
-                      <button class="button">Hold</button>
+                      <button class="button approve-soft" data-open-slip>Search book</button>
+                      <button class="button" data-hold>Hold</button>
                     </div>
                   </td>
                 </tr>
-                <tr>
+                <tr data-slip-row data-book="Hard Rock" data-market="LAD ML" data-slip="LAD ML" data-stake="$25" data-target="Hard Rock IL" data-url="https://hardrock.bet/betslip?selection=LAD-ML-118&stake=25" data-updated-minutes="36">
                   <td><span class="rank">04</span></td>
                   <td>
                     <div class="market-cell">
@@ -1433,7 +2262,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">LAD ML <span class="opponent-text">@ ARI</span></span>
-                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock">HR</span>Hard Rock · public fade · 1:35p</span>
+                        <span class="book book-line"><span class="book-glyph hr" aria-label="Hard Rock"><img src="https://www.google.com/s2/favicons?domain=hardrock.bet&sz=64" alt=""></span>Hard Rock · public fade · 1:35p</span>
                       </div>
                     </div>
                   </td>
@@ -1445,36 +2274,8 @@
                   <td>$25</td>
                   <td>
                     <div class="row-actions">
-                      <button class="button approve-soft">Approve</button>
-                      <button class="button">Hold</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr class="needs-refresh">
-                  <td><span class="rank">05</span></td>
-                  <td>
-                    <div class="market-cell">
-                      <div class="matchup-marks">
-                        <span class="team-mark" aria-label="New York Yankees logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png" alt="New York Yankees"></span>
-                        <span class="team-mark opponent" aria-label="Cleveland Guardians logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/cle.png" alt="Cleveland Guardians"></span>
-                      </div>
-                      <div class="market-copy">
-                        <span class="market">NYY -1.5 <span class="opponent-text">vs CLE</span></span>
-                        <span class="book book-line"><span class="book-glyph mgm" aria-label="BetMGM">M</span>BetMGM · below stake cap · 1:22p</span>
-                        <span class="state-note warn">Needs price refresh before approval</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="odds">+132</td>
-                  <td class="positive">44.7%</td>
-                  <td>43.1%</td>
-                  <td class="positive">+1.6%</td>
-                  <td>+126</td>
-                  <td>$10</td>
-                  <td>
-                    <div class="row-actions">
-                      <button class="button inactive" disabled>Refresh</button>
-                      <button class="button">Hold</button>
+                      <button class="button approve-soft" data-open-slip>Open slip</button>
+                      <button class="button" data-hold>Hold</button>
                     </div>
                   </td>
                 </tr>
@@ -1488,7 +2289,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">PHI ML <span class="opponent-text">vs NYM</span></span>
-                        <span class="book book-line"><span class="book-glyph dk" aria-label="DraftKings">DK</span>DraftKings · starter confirmed · 1:18p</span>
+                        <span class="book book-line"><span class="book-glyph dk" aria-label="DraftKings"><img src="https://www.google.com/s2/favicons?domain=draftkings.com&sz=64" alt=""></span>DraftKings · starter confirmed · 1:18p</span>
                       </div>
                     </div>
                   </td>
@@ -1515,7 +2316,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">HOU +1.5 <span class="opponent-text">@ OAK</span></span>
-                        <span class="book book-line"><span class="book-glyph fd" aria-label="FanDuel">FD</span>FanDuel · road split edge · 1:09p</span>
+                        <span class="book book-line"><span class="book-glyph fd" aria-label="FanDuel"><img src="https://www.google.com/s2/favicons?domain=fanduel.com&sz=64" alt=""></span>FanDuel · road split edge · 1:09p</span>
                       </div>
                     </div>
                   </td>
@@ -1542,7 +2343,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">STL ML <span class="opponent-text">@ MIL</span></span>
-                        <span class="book book-line"><span class="book-glyph cz" aria-label="Caesars">CZ</span>Caesars · bullpen rest · 12:58p</span>
+                        <span class="book book-line"><span class="book-glyph cz" aria-label="Caesars"><img src="https://www.google.com/s2/favicons?domain=caesars.com&sz=64" alt=""></span>Caesars · bullpen rest · 12:58p</span>
                       </div>
                     </div>
                   </td>
@@ -1559,34 +2360,6 @@
                     </div>
                   </td>
                 </tr>
-                <tr class="blocked-row">
-                  <td><span class="rank">09</span></td>
-                  <td>
-                    <div class="market-cell">
-                      <div class="matchup-marks">
-                        <span class="team-mark" aria-label="Kansas City Royals logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/kc.png" alt="Kansas City Royals"></span>
-                        <span class="team-mark opponent" aria-label="Chicago White Sox logo"><img src="https://a.espncdn.com/i/teamlogos/mlb/500/cws.png" alt="Chicago White Sox"></span>
-                      </div>
-                      <div class="market-copy">
-                        <span class="market">KC -1.5 <span class="opponent-text">vs CWS</span></span>
-                        <span class="book book-line"><span class="book-glyph b365" aria-label="bet365">365</span>bet365 · steam held · 12:44p</span>
-                        <span class="state-note bad">Blocked: rank outside automation gate</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="odds">+146</td>
-                  <td class="positive">42.1%</td>
-                  <td>40.7%</td>
-                  <td class="positive">+1.4%</td>
-                  <td>+139</td>
-                  <td>$10</td>
-                  <td>
-                    <div class="row-actions">
-                      <button class="button inactive" disabled>Blocked</button>
-                      <button class="button">Hold</button>
-                    </div>
-                  </td>
-                </tr>
                 <tr>
                   <td><span class="rank">10</span></td>
                   <td>
@@ -1597,7 +2370,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">SD ML <span class="opponent-text">@ SF</span></span>
-                        <span class="book book-line"><span class="book-glyph nv" aria-label="Novig">N</span>Novig · no-vig price · 12:37p</span>
+                        <span class="book book-line"><span class="book-glyph nv" aria-label="Novig"><img src="https://www.google.com/s2/favicons?domain=novig.us&sz=64" alt=""></span>Novig · 12:37p</span>
                       </div>
                     </div>
                   </td>
@@ -1624,7 +2397,7 @@
                       </div>
                       <div class="market-copy">
                         <span class="market">ATL -1.5 <span class="opponent-text">@ MIA</span></span>
-                        <span class="book book-line"><span class="book-glyph px" aria-label="ProphetX">PX</span>ProphetX · exchange fill · 12:31p</span>
+                        <span class="book book-line"><span class="book-glyph px" aria-label="ProphetX"><img src="https://www.google.com/s2/favicons?domain=getprophetx.co&sz=64" alt=""></span>ProphetX · 12:31p</span>
                       </div>
                     </div>
                   </td>
@@ -1646,11 +2419,10 @@
           </div>
         </section>
 
-        <section class="panel">
+        <section class="panel history-panel">
           <div class="section-head">
             <div class="section-title">
               <h2>Bet history</h2>
-              <p class="small-copy">Settled performance by day. Use this to see whether the model is actually compounding edge.</p>
             </div>
             <span class="badge positive">+3.6% ROI</span>
           </div>
@@ -1730,28 +2502,29 @@
 
       <aside class="panel drawer" aria-label="Decision details">
         <div class="panel-head">
-          <h2>Ticket inspector</h2>
-          <span class="badge positive">Executable</span>
+          <h2>Selected slip</h2>
+          <span class="badge positive">Ready</span>
         </div>
         <div class="drawer-body">
           <section class="decision">
-            <h3><span class="plus-mark">+</span> SEA +1.5 at -142</h3>
+            <h3>Hard Rock batch</h3>
+            <p class="pick-context">3 bets · $70 total stake · opens Hard Rock IL</p>
             <div class="math-grid">
               <div class="math-cell positive-surface">
-                <div class="label">Model</div>
-                <div class="metric-value positive">63%</div>
+                <div class="label">Bets</div>
+                <div class="metric-value positive">3</div>
               </div>
               <div class="math-cell">
-                <div class="label">Implied</div>
-                <div class="metric-value">58.7%</div>
+                <div class="label">Stake</div>
+                <div class="metric-value">$70</div>
               </div>
               <div class="math-cell positive-surface">
-                <div class="label">EV</div>
-                <div class="metric-value positive">+7.1%</div>
+                <div class="label">Best Edge</div>
+                <div class="metric-value positive">+4.8%</div>
               </div>
               <div class="math-cell">
-                <div class="label">Unit</div>
-                <div class="metric-value">$25</div>
+                <div class="label">Exposure</div>
+                <div class="metric-value">$397</div>
               </div>
             </div>
           </section>
@@ -1763,15 +2536,15 @@
                 <td>Hard Rock</td>
               </tr>
               <tr>
-                <th>Max price</th>
-                <td>-151</td>
+                <th>Slip makeup</th>
+                <td>SEA, BAL, LAD</td>
               </tr>
               <tr>
-                <th>Price age</th>
+                <th>Oldest price</th>
                 <td>42s</td>
               </tr>
               <tr>
-                <th>Exposure after approve</th>
+                <th>Exposure after batch</th>
                 <td>$397</td>
               </tr>
               <tr>
@@ -1785,11 +2558,11 @@
             </tbody>
           </table>
 
-          <section class="line-movement" aria-label="Selected ticket line movement">
+          <section class="line-movement favorable" aria-label="Selected ticket line movement">
             <div class="line-labels">
-              <span>Open -136</span>
-              <span>Now -142</span>
-              <span>Ceiling -151</span>
+              <span>SEA -142</span>
+              <span>BAL +104</span>
+              <span>LAD -118</span>
             </div>
             <svg viewBox="0 0 320 72" preserveAspectRatio="none" aria-hidden="true">
               <line class="axis" x1="0" y1="52" x2="320" y2="52"></line>
@@ -1797,51 +2570,20 @@
               <path class="line" d="M4 44 C42 42 68 49 102 38 S166 33 202 35 S258 26 316 29"></path>
             </svg>
             <div class="line-labels">
-              <span>Still inside guardrail</span>
-              <span class="positive">+9c cushion</span>
+              <span>All three inside guardrail</span>
+              <span class="positive">Ready in one pass</span>
             </div>
-          </section>
-
-          <section class="notes">
-            <div>
-              <div class="label">Qualification</div>
-            </div>
-            <div class="note">
-              <h3>Clears current guardrail</h3>
-              <p>Confidence above 60%, rank inside top half of slate, and lineup status is locked.</p>
-            </div>
-            <div class="note">
-              <h3>Refresh state</h3>
-              <p>Price is 42 seconds old and still better than the maximum acceptable price.</p>
-            </div>
-            <div class="note">
-              <h3>Location routing</h3>
-              <p data-route-note>Illinois route keeps the deeplink on the in-state Hard Rock book and hides books not executable there.</p>
-            </div>
+            <div class="line-status">Best workflow: place the full Hard Rock slip together</div>
           </section>
 
           <div class="actions">
-            <button class="button primary">Approve $25</button>
-            <button class="button">Add note</button>
-            <button class="button">Reject</button>
+            <button class="button primary betslip-live" data-open-selected-slip>Open Hard Rock slip</button>
           </div>
         </div>
       </aside>
-
-      <section class="panel supporting" aria-label="Supporting status">
-        <div class="panel-head">
-          <h2>System status</h2>
-          <span class="badge">Supporting detail</span>
-        </div>
-        <div class="support-grid">
-          <span class="pill ready"><span class="dot"></span>MySPariEdge scraped</span>
-          <span class="pill degraded"><span class="dot"></span>Fresh odds degraded</span>
-          <span class="pill ready"><span class="dot"></span>Lineup check fresh</span>
-          <span class="pill ready"><span class="dot"></span>Background jobs ready</span>
-        </div>
-      </section>
     </section>
   </main>
+  <div class="toast" role="status" aria-live="polite" data-toast></div>
   <script>
     const historySection = document.querySelector(".history");
     const profitValue = document.querySelector("[data-count-to]");
@@ -1851,19 +2593,124 @@
     const inspectorState = document.querySelector("[data-inspector-state]");
     const deeplinkTarget = document.querySelector("[data-deeplink-target]");
     const routeNote = document.querySelector("[data-route-note]");
+    const lastUpdated = document.querySelector("[data-last-updated]");
+    const selectedSlipButton = document.querySelector("[data-open-selected-slip]");
+    const toast = document.querySelector("[data-toast]");
 
     const routeMap = {
       IL: {
         state: "Illinois",
         target: "Hard Rock IL",
-        note: "Illinois route keeps the deeplink on the in-state Hard Rock book and hides books not executable there."
+        note: "Illinois route keeps the deeplink on the in-state Hard Rock book and hides books not available there."
       },
       IA: {
         state: "Iowa",
         target: "Hard Rock IA",
-        note: "Iowa route will swap the deeplink to the Iowa book app when the same executable price is available there."
+        note: "Iowa route will swap the deeplink to the Iowa book app when the same ready price is available there."
       }
     };
+
+    const formatTime = (date) => date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).toLowerCase().replace(" ", "");
+
+    function showToast(message) {
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add("active");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("active"), 2200);
+    }
+
+    function selectedRow() {
+      return document.querySelector("[data-slip-row].selected") || document.querySelector("[data-slip-row]");
+    }
+
+    function updateDrawerFromRow(row) {
+      if (!row) return;
+      document.querySelectorAll("[data-slip-row]").forEach((candidate) => candidate.classList.toggle("selected", candidate === row));
+      const bookCell = document.querySelector(".inspection-table tr:nth-child(1) td");
+      const slipCell = document.querySelector(".inspection-table tr:nth-child(2) td");
+      const stakeCell = document.querySelector(".math-grid .math-cell:nth-child(2) .metric-value");
+      const priceAgeCell = document.querySelector(".inspection-table tr:nth-child(3) td");
+      const age = Number(row.dataset.updatedMinutes || 0);
+      if (bookCell) bookCell.textContent = row.dataset.book || "Book";
+      if (slipCell) slipCell.textContent = row.dataset.slip || row.dataset.market || "Selected bet";
+      if (stakeCell) stakeCell.textContent = row.dataset.stake || "$0";
+      if (priceAgeCell) priceAgeCell.textContent = age >= 30 ? `${age}m - refresh` : `${age}m`;
+      if (deeplinkTarget) deeplinkTarget.textContent = row.dataset.target || "Manual search";
+      if (selectedSlipButton) {
+        selectedSlipButton.textContent = row.dataset.url ? `Open ${row.dataset.book} slip` : "Search book manually";
+        selectedSlipButton.dataset.url = row.dataset.url || "";
+      }
+    }
+
+    function refreshTimes() {
+      const now = new Date();
+      if (lastUpdated) lastUpdated.textContent = formatTime(now);
+      document.querySelectorAll("[data-slip-row]").forEach((row) => {
+        row.dataset.updatedMinutes = "0";
+        row.classList.remove("needs-refresh");
+      });
+      updateDrawerFromRow(selectedRow());
+      showToast("Prices refreshed in prototype state.");
+    }
+
+    function openSlip(row, button) {
+      updateDrawerFromRow(row);
+      const url = row?.dataset.url || "";
+      if (!url) {
+        showToast("No exact betslip link captured. Search the book manually.");
+        return;
+      }
+      button?.classList.add("opened");
+      row.dataset.actionState = "approved";
+      window.open(url, "_blank", "noopener,noreferrer");
+      showToast(`Opened ${row.dataset.book} betslip. Confirm side, line, and odds before marking placed.`);
+    }
+
+    document.querySelectorAll("[data-slip-row]").forEach((row) => {
+      if (Number(row.dataset.updatedMinutes || 0) >= 30) row.classList.add("needs-refresh");
+      row.addEventListener("click", (event) => {
+        if (event.target.closest("button")) return;
+        updateDrawerFromRow(row);
+      });
+    });
+
+    document.querySelectorAll("[data-open-slip]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        openSlip(button.closest("[data-slip-row]"), button);
+      });
+    });
+
+    document.querySelectorAll("[data-hold]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const row = button.closest("[data-slip-row]");
+        if (!row) return;
+        row.dataset.actionState = "held";
+        showToast(`${row.dataset.market || "Bet"} held for later review.`);
+      });
+    });
+
+    selectedSlipButton?.addEventListener("click", () => {
+      const row = selectedRow();
+      openSlip(row, selectedSlipButton);
+    });
+
+    document.querySelectorAll(".refresh-action, .pull-refresh").forEach((control) => {
+      control.addEventListener("click", refreshTimes);
+    });
+
+    window.setInterval(() => {
+      document.querySelectorAll("[data-slip-row]").forEach((row) => {
+        const age = Number(row.dataset.updatedMinutes || 0) + 1;
+        row.dataset.updatedMinutes = String(age);
+        row.classList.toggle("needs-refresh", age >= 30);
+      });
+      updateDrawerFromRow(selectedRow());
+    }, 60000);
+
+    updateDrawerFromRow(selectedRow());
 
     function animateProfit() {
       if (!profitValue || profitValue.dataset.done) return;
@@ -1909,6 +2756,87 @@
         if (routeNote) routeNote.textContent = route.note;
       });
     }
+
+    const annotationKey = `d-plus-bet-annotations:${location.pathname.split("/").pop()}`;
+    const annotationLayer = document.querySelector("[data-annotation-layer]");
+    const annotationToggle = document.querySelector("[data-annotation-toggle]");
+    const annotationClear = document.querySelector("[data-annotation-clear]");
+    let annotations = [];
+
+    const saveAnnotations = () => {
+      localStorage.setItem(annotationKey, JSON.stringify(annotations));
+    };
+
+    const renderAnnotations = () => {
+      if (!annotationLayer) return;
+      annotationLayer.innerHTML = "";
+      annotations.forEach((note, index) => {
+        const card = document.createElement("article");
+        card.className = "annotation-note";
+        card.style.left = `${note.x}px`;
+        card.style.top = `${note.y}px`;
+        card.addEventListener("click", (event) => event.stopPropagation());
+        const noteHeader = document.createElement("header");
+        const label = document.createElement("span");
+        const remove = document.createElement("button");
+        const textarea = document.createElement("textarea");
+        label.textContent = `Note ${index + 1}`;
+        remove.type = "button";
+        remove.setAttribute("aria-label", "Delete note");
+        remove.textContent = "Delete";
+        textarea.setAttribute("aria-label", "Annotation note");
+        textarea.value = note.text || "";
+        noteHeader.append(label, remove);
+        card.append(noteHeader, textarea);
+        textarea.addEventListener("input", () => {
+          annotations[index].text = textarea.value;
+          saveAnnotations();
+        });
+        remove.addEventListener("click", () => {
+          annotations.splice(index, 1);
+          saveAnnotations();
+          renderAnnotations();
+        });
+        annotationLayer.appendChild(card);
+      });
+    };
+
+    try {
+      annotations = JSON.parse(localStorage.getItem(annotationKey) || "[]");
+    } catch {
+      annotations = [];
+    }
+    const sizeAnnotationLayer = () => {
+      if (!annotationLayer) return;
+      annotationLayer.style.height = `${Math.max(document.documentElement.scrollHeight, window.innerHeight)}px`;
+    };
+    window.addEventListener("resize", sizeAnnotationLayer);
+    sizeAnnotationLayer();
+    renderAnnotations();
+
+    annotationToggle?.addEventListener("click", () => {
+      const active = annotationToggle.getAttribute("aria-pressed") !== "true";
+      annotationToggle.setAttribute("aria-pressed", String(active));
+      document.body.classList.toggle("annotating", active);
+    });
+
+    annotationClear?.addEventListener("click", () => {
+      annotations = [];
+      saveAnnotations();
+      renderAnnotations();
+    });
+
+    annotationLayer?.addEventListener("click", (event) => {
+      if (!document.body.classList.contains("annotating")) return;
+      annotations.push({
+        x: Math.max(8, event.pageX - 18),
+        y: Math.max(8, event.pageY - 18),
+        text: ""
+      });
+      saveAnnotations();
+      renderAnnotations();
+      annotationLayer.querySelector(".annotation-note:last-child textarea")?.focus();
+    });
   </script>
 </body>
 </html>

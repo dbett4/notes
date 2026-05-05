@@ -23,7 +23,7 @@ This brand is independent from LSL. Do not use LSL colors, LSL teal, LSL green g
 | Graphite plus sign | SAFE | The plus becomes the signal: edge, action, and selection without adding sportsbook heat. |
 | Graphite/off-white base | SAFE | Keeps the system calm and durable for logs, dashboards, and reports. |
 | Muted slate as secondary accent | SAFE | Useful for live market movement, alerts, or odds movement without feeling loud. |
-| Semantic green/red | SAFE | Use only for positive/negative values and operational state, never as brand accent. |
+| Non-LSL green/red | SAFE | Use for positive/negative values, operational state, and restrained product accents when it stays away from LSL teal/green. |
 
 Avoid sportsbook clichés: casino chips, cards, dice, neon, flames, dollar signs, parlay-ticket illustrations, mascots, and fake “big win” energy.
 
@@ -64,7 +64,7 @@ Do not use teal. Teal reads as LSL and is off-brand here.
 
 Use `color-signal` sparingly. The plus should feel like a decision point, not an error state. The system should read as monochrome first, with state color visible only when it carries meaning.
 
-Use green and red only for literal semantic values: profit/loss, valid/invalid, positive/negative edge, blocker/error. Green and red are not brand colors and should not appear in logo, navigation, primary actions, empty states, or decorative graphics.
+Green is allowed when it feels analytical, muted, or sports-data native. Avoid LSL teal and bright LSL-style greens. Use red only for literal negative or blocking states.
 
 ## Typography
 
@@ -165,6 +165,12 @@ Use graphics as system language, not decoration.
 Do not use generic abstract blobs, glowing gradients, purple-blue AI backgrounds, or decorative charts that do not correspond to real data.
 
 ## Components
+
+### States
+
+Every operational surface should account for loading/running, success/ready, warning/degraded, blocked action, and empty/recovery states.
+
+State copy should name the source, what changed, whether anything was written, and the next safe action.
 
 ### Buttons
 

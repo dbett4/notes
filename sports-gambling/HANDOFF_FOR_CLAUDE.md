@@ -41,7 +41,7 @@ Important design constraints:
 - No purple-blue AI gradients.
 - No glowing blobs/orbs.
 - No oversized generic SaaS cards.
-- No green as a brand accent. Use green/red only for real semantic betting values.
+- Green may be used when it is clearly not LSL teal/green. Prefer muted analytical greens; keep red for real negative or blocking states.
 - Actual app workflows should be compact and useful, not landing-page-first.
 
 ## Current Data and Analysis State

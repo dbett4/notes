@@ -25,7 +25,10 @@
 
     body {
       margin: 0;
-      background: var(--paper);
+      background:
+        linear-gradient(90deg, rgba(216, 208, 195, 0.18) 1px, transparent 1px) 0 0 / 72px 72px,
+        linear-gradient(180deg, rgba(216, 208, 195, 0.14) 1px, transparent 1px) 0 0 / 72px 72px,
+        var(--paper);
       color: var(--ink);
       font-family: Geist, "Geist Sans", Satoshi, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-feature-settings: "liga", "ss05", "tnum";
@@ -166,9 +169,11 @@
       border: 1px solid var(--line);
       border-radius: 6px;
       padding: 16px;
-      background: rgba(255, 255, 255, 0.32);
+      background: rgba(255, 253, 247, 0.58);
       position: relative;
       overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+      transition: border-color 160ms ease, background 160ms ease;
     }
 
     .metric::after {
@@ -253,8 +258,8 @@
       border: 1px solid var(--line);
       border-radius: 6px;
       background:
-        linear-gradient(var(--line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        linear-gradient(rgba(216, 208, 195, 0.58) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(216, 208, 195, 0.58) 1px, transparent 1px),
         rgba(255, 250, 240, 0.68);
       background-size: 24px 24px;
       position: relative;
@@ -269,12 +274,28 @@
     }
 
     .ticket {
+      position: relative;
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 16px;
       align-items: center;
       padding: 14px 0;
       border-top: 1px solid var(--line);
+      transition: background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .ticket::before {
+      content: "";
+      position: absolute;
+      inset: 14px auto 14px -8px;
+      width: 1px;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(63, 58, 52, 0.22) 0 2px,
+        transparent 2px 6px
+      );
+      opacity: 0;
+      transition: opacity 160ms ease;
     }
 
     .ticket:first-of-type { border-top: 0; }
@@ -311,9 +332,136 @@
       .metrics { grid-template-columns: 1fr; }
       .panel { padding: 18px; }
     }
+
+    @media (hover: hover) and (pointer: fine) {
+      .metric:hover {
+        border-color: var(--line-strong, var(--line));
+        background: rgba(255, 253, 247, 0.72);
+      }
+
+      .ticket:hover {
+        background: rgba(255, 253, 247, 0.62);
+        box-shadow: inset 2px 0 0 var(--slate);
+      }
+
+      .ticket:hover::before {
+        opacity: 1;
+      }
+    }
+
+    .annotation-toolbar {
+      position: fixed;
+      z-index: 50;
+      left: 18px;
+      bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 250, 240, 0.94);
+      box-shadow: 0 10px 28px rgba(23, 23, 23, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .annotation-toolbar button {
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 10px;
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 620;
+      transition: transform 120ms var(--ease-out), background 160ms ease, border-color 160ms ease;
+    }
+
+    .annotation-toolbar button[aria-pressed="true"] {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
+    }
+
+    .annotation-toolbar button:active,
+    .annotation-note button:active {
+      transform: scale(0.97);
+    }
+
+    .annotation-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      min-height: 100%;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    body.annotating .annotation-layer {
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+
+    .annotation-note {
+      position: absolute;
+      width: min(220px, calc(100vw - 28px));
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(255, 253, 247, 0.98);
+      box-shadow: 0 8px 22px rgba(23, 23, 23, 0.12);
+      overflow: hidden;
+      pointer-events: auto;
+    }
+
+    .annotation-note header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .annotation-note textarea {
+      width: 100%;
+      min-height: 74px;
+      resize: vertical;
+      border: 0;
+      outline: 0;
+      padding: 8px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .annotation-note button {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 11px;
+      line-height: 18px;
+    }
   </style>
 </head>
 <body>
+  <div class="annotation-toolbar" aria-label="Annotation controls">
+    <button type="button" data-annotation-toggle aria-pressed="false">Annotate</button>
+    <button type="button" data-annotation-clear>Clear</button>
+  </div>
+  <div class="annotation-layer" data-annotation-layer aria-label="Preview annotations"></div>
   <main>
     <header>
       <div class="brand" aria-label="d plus bet">
@@ -416,5 +564,87 @@
       </div>
     </section>
   </main>
+  <script>
+    const annotationKey = `d-plus-bet-annotations:${location.pathname.split("/").pop()}`;
+    const annotationLayer = document.querySelector("[data-annotation-layer]");
+    const annotationToggle = document.querySelector("[data-annotation-toggle]");
+    const annotationClear = document.querySelector("[data-annotation-clear]");
+    let annotations = [];
+
+    const saveAnnotations = () => {
+      localStorage.setItem(annotationKey, JSON.stringify(annotations));
+    };
+
+    const renderAnnotations = () => {
+      if (!annotationLayer) return;
+      annotationLayer.innerHTML = "";
+      annotations.forEach((note, index) => {
+        const card = document.createElement("article");
+        card.className = "annotation-note";
+        card.style.left = `${note.x}px`;
+        card.style.top = `${note.y}px`;
+        card.addEventListener("click", (event) => event.stopPropagation());
+        const noteHeader = document.createElement("header");
+        const label = document.createElement("span");
+        const remove = document.createElement("button");
+        const textarea = document.createElement("textarea");
+        label.textContent = `Note ${index + 1}`;
+        remove.type = "button";
+        remove.setAttribute("aria-label", "Delete note");
+        remove.textContent = "Delete";
+        textarea.setAttribute("aria-label", "Annotation note");
+        textarea.value = note.text || "";
+        noteHeader.append(label, remove);
+        card.append(noteHeader, textarea);
+        textarea.addEventListener("input", () => {
+          annotations[index].text = textarea.value;
+          saveAnnotations();
+        });
+        remove.addEventListener("click", () => {
+          annotations.splice(index, 1);
+          saveAnnotations();
+          renderAnnotations();
+        });
+        annotationLayer.appendChild(card);
+      });
+    };
+
+    try {
+      annotations = JSON.parse(localStorage.getItem(annotationKey) || "[]");
+    } catch {
+      annotations = [];
+    }
+    const sizeAnnotationLayer = () => {
+      if (!annotationLayer) return;
+      annotationLayer.style.height = `${Math.max(document.documentElement.scrollHeight, window.innerHeight)}px`;
+    };
+    window.addEventListener("resize", sizeAnnotationLayer);
+    sizeAnnotationLayer();
+    renderAnnotations();
+
+    annotationToggle?.addEventListener("click", () => {
+      const active = annotationToggle.getAttribute("aria-pressed") !== "true";
+      annotationToggle.setAttribute("aria-pressed", String(active));
+      document.body.classList.toggle("annotating", active);
+    });
+
+    annotationClear?.addEventListener("click", () => {
+      annotations = [];
+      saveAnnotations();
+      renderAnnotations();
+    });
+
+    annotationLayer?.addEventListener("click", (event) => {
+      if (!document.body.classList.contains("annotating")) return;
+      annotations.push({
+        x: Math.max(8, event.pageX - 18),
+        y: Math.max(8, event.pageY - 18),
+        text: ""
+      });
+      saveAnnotations();
+      renderAnnotations();
+      annotationLayer.querySelector(".annotation-note:last-child textarea")?.focus();
+    });
+  </script>
 </body>
 </html>
