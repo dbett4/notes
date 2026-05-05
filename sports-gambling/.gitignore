@@ -1,0 +1,5 @@
+data/raw/myspariedge/cookie.txt
+data/raw/myspariedge/*/*.json
+__pycache__/
+*.pyc
+.wrangler/
